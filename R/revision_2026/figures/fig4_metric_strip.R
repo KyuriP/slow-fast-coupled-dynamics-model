@@ -148,7 +148,7 @@ pE <- ggplot(
   theme_pub(base_size = 9.5) +
   theme(
     legend.position = "none",
-    plot.title = element_text(size = title_size_strip, margin = margin(b = 5)),
+    plot.title = element_text(size = title_size_strip, margin = margin(b = 8)),
     axis.title = element_text(size = axis_title_strip),
     axis.text = element_text(size = axis_text_strip),
     axis.text.x = element_text(size = axis_text_strip)
@@ -196,7 +196,7 @@ pF <- ggplot(
   theme_pub(base_size = 9.5) +
   theme(
     legend.position = "none",
-    plot.title = element_text(size = title_size_strip, margin = margin(b = 5)),
+    plot.title = element_text(size = title_size_strip, margin = margin(b = 8)),
     axis.title = element_text(size = axis_title_strip),
     axis.text = element_text(size = axis_text_strip),
     axis.text.x = element_text(size = axis_text_strip)
@@ -210,7 +210,7 @@ ggsave(
   "figs/revision_2026/Figure4_metric_strip.pdf",
   fig4_metric_strip,
   width = 8.4,
-  height = 3
+  height = 2.5
 )
 
 ggsave(
