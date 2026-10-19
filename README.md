@@ -53,6 +53,7 @@ slow-fast-coupled-dynamics-model/
 │   │   ├── 05_supp_regime_history_dependence.R      Supplement: history-dependence under feedback
 │   │   ├── 06_supp_window_check_revised.R           Appendix B: observation-window omitted-context check
 │   │   ├── utils_uncentered01_model.R               Shared fast-layer update + nodewise-logistic network estimator
+│   │   ├── empirical/                               Empirical application to HELIUS (see below)
 │   │   └── figures/                                 One script per manuscript figure (see below)
 │   │
 │   ├── scripts/    legacy (Curie–Weiss model) — superseded, not used by the current manuscript
@@ -116,6 +117,39 @@ and writes to `figs/revision_2026/`.
 * `utils_uncentered01_model.R` — shared `simulate_fast_sweep()` (fast-layer update) and
   `fit_edges()` (nodewise-logistic network estimator), reused by every simulation script above so
   the fast-layer dynamics and network-estimation procedure are identical across simulations.
+
+## Empirical application (`R/revision_2026/empirical/`)
+
+Fits the cross-sectional form of the slow–fast model to HELIUS baseline data and tests whether it
+reproduces the group-comparison pattern reported in the perspective paper (Park et al., *Rethinking
+Group Differences in Psychopathology Networks*). The HELIUS preprocessing and the perspective-paper
+estimates come from the `slow-fast-perspective` repository, which by default is expected next to
+this one (`../slow-fast-perspective`, or one level deeper inside a folder of the same name); set `SLOWFAST_PERSPECTIVE_DIR` otherwise. Run from this
+repository's root:
+
+```r
+Rscript R/revision_2026/empirical/02_fit_context_models.R          # step 1
+Rscript R/revision_2026/empirical/03_sim_mechanisms.R # step 2
+Rscript R/revision_2026/empirical/04_discriminating_tests.R        # step 3
+```
+
+* `00_context_ising_core.R` — exact-likelihood Ising engine in which activations and (optionally)
+  couplings depend on person-level covariates. Median-split groups, continuous Slow Risk Load
+  effects and SRL-moderated coupling are all special cases of one likelihood (all 512 states
+  enumerated; Newton–Raphson with the exact Hessian; exact per-person sampling).
+* `01_data.R` — loads HELIUS through the perspective repo's scripts 00–03, or builds a synthetic
+  HELIUS-like data set (`SLOWFAST_DATA_MODE=synthetic`) for software testing only.
+* `02_fit_context_models.R` — **step 1**: shared coupling with SRL-shifted activations against group
+  and continuous "rewiring" models (LR tests, AIC/BIC, cross-validation; unadjusted and adjusted).
+* `03_sim_mechanisms.R` — **step 2**: simulates HELIUS-sized samples under null,
+  fixed-field, context, true-coupling and context+coupling mechanisms, runs the perspective-paper analysis
+  on each, and locates the observed results in each distribution.
+* `04_discriminating_tests.R` — **step 3**: other SRL splits, out-of-sample age and ethnicity
+  groupings, and the pattern of the 36 edge differences against each model's prediction.
+
+Outputs go to `res/revision_2026/empirical/helius/` and contain aggregate estimates only. Synthetic
+test runs go to `res/revision_2026/empirical/synthetic/` (git-ignored). Run-size settings are
+environment variables documented at the top of each script.
 
 ## Figures (`figs/revision_2026/` + kept exceptions)
 

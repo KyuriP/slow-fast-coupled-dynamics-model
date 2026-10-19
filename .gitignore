@@ -13,3 +13,7 @@ quarto-docs/**/libs/
 *.html
 network_estimation_check_writeup.md
 /feedback
+
+# Empirical application: cached synthetic data and synthetic test runs
+/res/revision_2026/empirical/private/
+/res/revision_2026/empirical/synthetic/

@@ -1,0 +1,4 @@
+"target","chisq","df","p","cor_observed_vs_target"
+"zero (no difference)",119.068498415121,36,8.06822601621549e-11,NA
+"context model prediction",103.617760569264,36,1.82223057483209e-08,-0.0999581154489931
+"context + coupling model prediction",18.1449383556446,36,0.994247377320901,0.881353178980483

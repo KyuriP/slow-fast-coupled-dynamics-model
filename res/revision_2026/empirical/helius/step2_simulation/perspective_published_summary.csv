@@ -1,0 +1,2 @@
+"LR_J","LR_h","bic_best","aic_best","dBIC_commonJ_vs_free","dBIC_commonJ_vs_commonh","sum_dJ_free","n_dh_free_positive","n_dh_commonJ_positive","dh_slp_free","dh_slp_commonJ","nct_M","nct_M_p","nct_S","nct_S_p","nct_strength_low","nct_strength_high"
+119.166999656794,112.619217277796,"equal_J_free_h","free_J_free_h",-242.830235686008,-264.950144128001,0.889195359028308,8,9,-0.177953921484969,0.07546703429569,0.319266476895371,0.378062193780622,1.11599478986869,0.0036996300369963,22.6150606503624,23.7310554402311

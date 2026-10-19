@@ -1,0 +1,43 @@
+R version 4.3.3 (2024-02-29)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 24.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.12.0
+
+locale:
+[1] C
+
+time zone: Europe/Amsterdam
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] ggpubr_0.6.0       qgraph_1.9.8       IsingSampler_0.5.0 skimr_2.1.5       
+ [5] haven_2.5.4        broom_1.0.5        purrr_1.0.2        ggrepel_0.9.5     
+ [9] patchwork_1.2.0    forcats_1.0.0      ggplot2_3.4.4      stringr_1.5.1     
+[13] tidyr_1.3.1        dplyr_1.1.4       
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.4       xfun_0.41          htmlwidgets_1.6.4  rstatix_0.7.2     
+ [5] psych_2.4.1        lattice_0.22-5     tzdb_0.4.0         quadprog_1.5-8    
+ [9] vctrs_0.6.5        tools_4.3.3        generics_0.1.3     stats4_4.3.3      
+[13] parallel_4.3.3     tibble_3.2.1       fansi_1.0.5        cluster_2.1.6     
+[17] pkgconfig_2.0.3    Matrix_1.6-5       data.table_1.14.10 checkmate_2.3.1   
+[21] lifecycle_1.0.4    compiler_4.3.3     munsell_0.5.0      mnormt_2.1.1      
+[25] repr_1.1.6         carData_3.0-5      glasso_1.11        htmltools_0.5.7   
+[29] fdrtool_1.2.17     htmlTable_2.4.2    Formula_1.2-5      car_3.1-2         
+[33] pillar_1.9.0       Hmisc_5.1-1        abind_1.4-5        rpart_4.1.23      
+[37] nlme_3.1-164       lavaan_0.6-17      gtools_3.9.5       tidyselect_1.2.0  
+[41] digest_0.6.34      stringi_1.8.3      reshape2_1.4.4     fastmap_1.1.1     
+[45] grid_4.3.3         colorspace_2.1-0   cli_3.6.2          magrittr_2.0.3    
+[49] base64enc_0.1-3    utf8_1.2.4         pbivnorm_0.6.0     readr_2.1.5       
+[53] foreign_0.8-86     corpcor_1.6.10     withr_2.5.0        scales_1.3.0      
+[57] backports_1.4.1    rmarkdown_2.25     jpeg_0.1-10        igraph_1.6.0      
+[61] nnet_7.3-19        gridExtra_2.3      ggsignif_0.6.4     png_0.1-8         
+[65] hms_1.1.3          pbapply_1.7-2      evaluate_0.23      knitr_1.45        
+[69] rlang_1.1.3        Rcpp_1.0.12        glue_1.7.0         rstudioapi_0.15.0 
+[73] jsonlite_1.8.8     R6_2.5.1           plyr_1.8.9        

@@ -1,0 +1,5 @@
+Data mode: helius
+Context parameters: step 1 fits (ctx_item, ctx_coupling)
+Replications per condition: 200
+Replications with network statistics: 50
+Full permutation NCT replications: 0

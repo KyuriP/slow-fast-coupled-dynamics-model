@@ -1,0 +1,7 @@
+"test","larger","restricted","LR","df","p"
+"J differs between groups (companion test)","group_free","group_commonJ",111.148061567626,36,1.34966778047725e-09
+"J differs between groups, given SRL-shifted thresholds","ctx_item_groupJ","ctx_item",87.0173539463722,36,4.12093089414202e-06
+"J moderated continuously by SRL","ctx_coupling","ctx_item",108.584636390675,36,3.3024281511522e-09
+"J moderated by SRL, given nonlinear thresholds","ctx_quad_coupling","ctx_item_quad",139.541709270648,36,4.0649159803188e-14
+"Nonlinear (SRL^2) threshold shift","ctx_item_quad","ctx_item",87.9623338927631,9,4.17007916938683e-15
+"Symptom-specific vs common gamma","ctx_item","ctx_common",116.507983183663,8,1.7417650925607e-21
