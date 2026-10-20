@@ -38,7 +38,7 @@ sf_symptoms <- c("anh", "dep", "slp", "ene", "app", "glt", "con", "mot", "sui")
 sf_find_perspective <- function() {
   env <- Sys.getenv("SLOWFAST_PERSPECTIVE_DIR", "")
   candidates <- if (nzchar(env)) env else
-    c("../slow-fast-perspective", "../slow-fast-perspective/slow-fast-perspective")
+    c("inputs/perspective", "../slow-fast-perspective", "../slow-fast-perspective/slow-fast-perspective")
   for (d in candidates) {
     if (dir.exists(file.path(d, "results", "network_invariance_exact"))) {
       return(normalizePath(d))

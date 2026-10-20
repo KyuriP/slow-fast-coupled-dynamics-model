@@ -14,7 +14,7 @@ source("R/revision_2026/figures/theme_publication.R")
 
 in_dir <- "res/revision_2026/empirical/helius/step3_discriminating_tests"
 splits <- read.csv(file.path(in_dir, "a_srl_splits.csv"))
-groups <- read.csv(file.path(in_dir, "b_out_of_sample_groupings.csv"))
+groups <- read.csv(file.path(in_dir, "b_additional_groupings.csv"))
 
 split_labels <- c(
   "median (bottom 1/2 vs top 1/2)"    = "Halves",

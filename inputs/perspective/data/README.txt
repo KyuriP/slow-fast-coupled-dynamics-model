@@ -1,0 +1,1 @@
+Restricted HELIUS data are not included. Authorized users may place helius.sav here. Never upload or commit that file. Alternatively set SLOWFAST_PERSPECTIVE_DIR to an authorized local copy of the perspective project.

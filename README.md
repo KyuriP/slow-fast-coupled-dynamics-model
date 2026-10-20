@@ -1,186 +1,70 @@
-<h1 align="center">When Context Looks Like Coupling</h1>
-<p align="center"><em>A Slow&ndash;Fast Framework for Psychological Dynamics</em></p>
+# When Context Looks Like Coupling in a Slow–Fast Framework for Psychological Dynamics
 
-<p align="center">
-  <img src="https://img.shields.io/badge/language-R-276DC3?logo=r&logoColor=white" alt="Language: R">
-  <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0">
-  <img src="https://img.shields.io/badge/status-under%20review-yellow" alt="Status: under review">
-</p>
+Analysis package for revised_manuscript_v5, checked on 20 October 2026. This package contains the current simulation code, aggregate empirical results, simulated trajectories, and figure sources. It is based on repository commit 11e3ebd06e5dcff11c8bedb3e5544b1ee445ae17 with the corrections recorded in AUDIT.txt. It makes no claim about publication or review status.
 
-<p align="center">
-  <img src="figs/slow-fast-model-illustration_v2.png" width="650" alt="Slow-fast model schematic: a fast binary symptom network S_i,t coupled to a slower context process P_t, with feedback from the network back to context">
-</p>
+## Start here
 
-This repository contains the simulation code, cached results, and figure-generation scripts for
-a slow–fast computational model in which a fast binary symptom network (heterogeneous thresholds
-`tau_i`, symptom–symptom coupling `omega_ij`, context sensitivity `gamma_i`) is coupled to a
-slower Ornstein–Uhlenbeck contextual process `P_t`, with optional feedback from symptoms back to
-context and acute shocks.
+Run commands from this directory in separate, fresh R sessions. The checked environment used R 4.4.2. Exact installed package versions are in session-info.txt. Install the packages loaded at the top of each script from CRAN before running it. The code does not install packages automatically.
 
-The manuscript itself ("When Context Looks Like Coupling: A Slow–Fast Framework for Psychological
-Dynamics") is written and maintained in Overleaf and is not tracked in this repository. This
-repo holds the simulation code, cached results, and the figures generated from them.
+The four simulations concern a nine-symptom system. The separate NCT check uses twelve symptoms. Files for older exploratory analyses may remain under R/revision_2026 and res/revision_2026, but only the analyses in the map below contribute to this manuscript. In particular, the observation-window analysis and its figures are not part of the submitted supplement.
 
-**Everything used by the current manuscript lives under `R/revision_2026/`, `res/revision_2026/`,
-and `figs/revision_2026/`**, plus a small number of files kept outside those folders because the
-manuscript still references them directly (see below). Everything else in the repo (`R/scripts/`,
-`R/utils/`, `res/archive/` and related cache folders, loose files in `figs/`/`img/`, and
-`quarto-docs/`) is from an earlier, superseded version of the model (a mean-field Curie–Weiss
-formulation) and is kept only for historical reference — none of it is reproducible against, or
-cited by, the current manuscript.
+## Figures and their sources
 
-## Repository structure
+Paths in the third column are relative to R/revision_2026 unless stated otherwise. Figure filenames preserve their original names, so their embedded numbers do not always equal the manuscript figure numbers.
 
-```
-slow-fast-coupled-dynamics-model/
-├── README.md
-├── .gitignore
-├── LICENSE
-├── slow-fast-coupled-dynamics-model.Rproj
-│
-├── R/
-│   ├── revision_2026/                              CURRENT model — everything below is used
-│   │   ├── 00_parameters_uncentered01.R             tau_i, omega_ij, gamma_i for all 9 symptoms
-│   │   ├── 01_sim_context_baseline.R                Simulation 1: context shifts symptom activation
-│   │   ├── 02_sim_stress_recovery.R                 Simulation 2: P_t dynamics + single shock, feedback off
-│   │   ├── 02b_sim_stress_recovery_coupling_sensitivity.R  Appendix: does coupling strength change recovery?
-│   │   ├── 02c_sim2_coupling_sensitivity_figure.R   Re-plots 02b's output as the final appendix figure
-│   │   ├── 03_sim_feedback.R                        Simulation 3 (main text): feedback on vs. off
-│   │   ├── 03b_sim_feedback_grid_supplement.R        Supplement: b calibration grid
-│   │   ├── 03c_sim_feedback_shock_grid_extended.R    Extends Sim 2/3 shock design across the b grid
-│   │   ├── 04_sim_network_estimation.R              Simulation 4: single-run network-estimation pilot
-│   │   ├── 04b_sim_network_estimation_replicated.R  Simulation 4: replicated design (locked results)
-│   │   ├── 05_supp_regime_history_dependence.R      Supplement: history-dependence under feedback
-│   │   ├── 06_supp_window_check_revised.R           Appendix B: observation-window omitted-context check
-│   │   ├── utils_uncentered01_model.R               Shared fast-layer update + nodewise-logistic network estimator
-│   │   ├── empirical/                               Empirical application to HELIUS (see below)
-│   │   └── figures/                                 One script per manuscript figure (see below)
-│   │
-│   ├── scripts/    legacy (Curie–Weiss model) — superseded, not used by the current manuscript
-│   ├── utils/       legacy — superseded
-│   └── 01_simulation1_context_baseline.R  legacy — superseded
-│
-├── res/
-│   ├── revision_2026/     CURRENT cached results, one subfolder per simulation (sim1–sim4, window_check, supp_history)
-│   ├── NCT_analysis/       still used — Appendix C's supplementary NCT robustness check (see Figures below)
-│   └── archive/, main/, heatmaps/, hysteresis/, network_check/, tuned/    legacy — superseded
-│
-├── figs/
-│   ├── revision_2026/                              CURRENT figures — everything referenced by the manuscript's
-│   │                                                 main text (Figures 1–4) and Appendix B
-│   ├── nct_structure_weighted.pdf,
-│   │   nct_strength_weighted.pdf,
-│   │   nct_edge_fp_weighted.pdf                     still used — Appendix C's NCT check
-│   ├── slow-fast-model-illustration_v2.png / .af    still used — Figure 1 schematic + editable source
-│   └── ... other loose files ...                    legacy — superseded
-│
-├── img/
-│   ├── model-illustration/    editable design-iteration source files for the Figure 1 schematic
-│   └── ...                    legacy/exploratory — superseded
-│
-└── quarto-docs/
-    └── ...                    legacy exploratory .qmd notebooks — superseded
+| Document figure | Figure file | Analysis and plotting source |
+|---|---|---|
+| Main 1 | figs/slow-fast-model-illustration_v4.png | Schematic copied from the current Overleaf project |
+| Main 2 | figs/revision_2026/Figure2_context_baseline.pdf | 01_sim_context_baseline.R, then figures/fig2_context_baseline.R |
+| Main 3 | figs/revision_2026/Figure3_perturbation_recovery.pdf | 02_sim_stress_recovery.R, then figures/fig3_perturbation_recovery.R |
+| Main 4 | figs/revision_2026/Figure3_regimes.pdf | 03c_sim_feedback_shock_grid_extended.R and 05_supp_regime_history_dependence.R, then figures/fig3_regimes.R |
+| Main 5 | figs/revision_2026/Figure4_network_trio.pdf and Figure4_metric_strip.pdf | 04_sim_network_estimation.R and 04b_sim_network_estimation_replicated.R, then figures/fig4_network_trio.R and figures/fig4_metric_strip.R |
+| Main 6 | figs/revision_2026/Figure_helius_mechanisms.pdf | empirical/02_fit_context_models.R and empirical/03_sim_mechanisms.R, then figures/fig_helius_mechanisms.R |
+| Main 7 | figs/revision_2026/Figure_helius_discriminating.pdf | empirical/04_discriminating_tests.R, then figures/fig_helius_discriminating.R |
+| Supplement S1 | figs/revision_2026/fig_sim1_burnin_trace.pdf | 01_sim_context_baseline.R |
+| Supplement S2 | figs/revision_2026/fig_sim2_coupling_sensitivity.pdf | 02b_sim_stress_recovery_coupling_sensitivity.R, then 02c_sim2_coupling_sensitivity_figure.R |
+| Supplement S3 | figs/nct_structure_weighted.pdf and nct_strength_weighted.pdf | R/scripts/08_(supp)NCT_analysis.R |
+| Supplement S4 | figs/nct_edge_fp_weighted.pdf | R/scripts/08_(supp)NCT_analysis.R |
+
+The main Simulation 3 feedback-on versus feedback-off numerical comparison additionally uses 03_sim_feedback.R and res/revision_2026/sim3. The history check uses steps 1250 through 1500, saved every five steps. Simulation 4's network diagrams show the single-run example, whereas its numerical summaries and metric panels use 30 independent replicates.
+
+## Simulation reproduction
+
+For example, regenerate Simulation 1 and its main figure with
+
+```sh
+Rscript R/revision_2026/01_sim_context_baseline.R
+Rscript R/revision_2026/figures/fig2_context_baseline.R
 ```
 
-## Current model pipeline (`R/revision_2026/`)
+The Simulation 1 script now explicitly selects Mersenne-Twister, Inversion and Rejection before setting seed 2026. A fresh run reproduces the manuscript means and the supplementary burn-in table. Its corrected cache is included. Run the other simulation and plotting scripts listed above in fresh Rscript processes. Their computational demands differ substantially. The NCT simulation performs 100 replicates for each of 27 conditions with 250 permutations per test. These are the settings reported in the supplement, not a high-precision calibration study.
 
-Run in order; each simulation script writes its cached output to the matching `res/revision_2026/`
-subfolder, and each figure script (in `R/revision_2026/figures/`) reads from `res/revision_2026/`
-and writes to `figs/revision_2026/`.
+## HELIUS data and empirical reproduction
 
-* `00_parameters_uncentered01.R` — defines the 9 PHQ-9-style symptoms and their `tau_i`, `omega_ij`,
-  `gamma_i` values, shared by every simulation script.
-* `01_sim_context_baseline.R` — **Simulation 1**: holds symptom coupling fixed and varies only the
-  slow context level `P`, showing that context alone shifts the distribution of active symptoms
-  (Figure 2).
-* `02_sim_stress_recovery.R` — **Simulation 2**: adds the full `P_t` OU process (mean reversion +
-  diffusion) plus a single acute shock, feedback off (`b = 0`).
-* `02b_sim_stress_recovery_coupling_sensitivity.R` / `02c_sim2_coupling_sensitivity_figure.R` —
-  **Appendix**: checks whether the strength of symptom-symptom coupling changes how fast the
-  system recovers from the Simulation 2 shock; `02c` re-plots `02b`'s cached output as the final,
-  three-condition appendix figure.
-* `03_sim_feedback.R` — **Simulation 3 (main text)**: same shock/recovery design as Simulation 2,
-  comparing feedback off vs. on (`b = 0.5`) to isolate the effect of symptom-to-context feedback
-  (Figure 3).
-* `03b_sim_feedback_grid_supplement.R` / `03c_sim_feedback_shock_grid_extended.R` — supplementary
-  grids used to calibrate `b` and to extend the shock/recovery design across feedback strengths.
-* `04_sim_network_estimation.R` / `04b_sim_network_estimation_replicated.R` — **Simulation 4**:
-  tests whether pooling cross-sectional data across context levels without conditioning on `P`
-  inflates the estimated symptom network relative to the true generative coupling (Figure 4). `04b`
-  is the replicated (30-run) design behind the locked quantitative results; `04` is the earlier
-  single-run pilot used for the qualitative network-diagram panels.
-* `05_supp_regime_history_dependence.R` — supplementary check for tipping-like/history-dependent
-  behavior under stronger feedback.
-* `06_supp_window_check_revised.R` — **Appendix B**: reruns the observation-window
-  omitted-context check under the current model (superseding the old `res/network_check/` version,
-  which used the pre-revision N=12 model).
-* `utils_uncentered01_model.R` — shared `simulate_fast_sweep()` (fast-layer update) and
-  `fit_edges()` (nodewise-logistic network estimator), reused by every simulation script above so
-  the fast-layer dynamics and network-estimation procedure are identical across simulations.
+Restricted participant data are not included. Public empirical files contain aggregate estimates, covariance matrices of fitted parameters, or simulated summary statistics. The saved fits.rds was inspected and contains fitted parameter objects rather than individual records.
 
-## Empirical application (`R/revision_2026/empirical/`)
+The exact preprocessing scripts and the aggregate inputs from the earlier perspective analysis are bundled under inputs/perspective. An authorized analyst may place helius.sav in inputs/perspective/data, or set SLOWFAST_PERSPECTIVE_DIR to a local perspective project containing its R scripts, data/helius.sav, and results/network_invariance_exact. The raw-data directory is excluded by .gitignore. Access to HELIUS data remains subject to the cohort's data-access requirements.
 
-Fits the cross-sectional form of the slow–fast model to HELIUS baseline data and tests whether it
-reproduces the group-comparison pattern reported in the perspective paper (Park et al., *Rethinking
-Group Differences in Psychopathology Networks*). The HELIUS preprocessing and the perspective-paper
-estimates come from the `slow-fast-perspective` repository, which by default is expected next to
-this one (`../slow-fast-perspective`, or one level deeper inside a folder of the same name); set `SLOWFAST_PERSPECTIVE_DIR` otherwise. Run from this
-repository's root:
-
-```r
-Rscript R/revision_2026/empirical/02_fit_context_models.R          # step 1
-Rscript R/revision_2026/empirical/03_sim_mechanisms.R # step 2
-Rscript R/revision_2026/empirical/04_discriminating_tests.R        # step 3
+```sh
+Rscript R/revision_2026/empirical/02_fit_context_models.R
+Rscript R/revision_2026/empirical/03_sim_mechanisms.R
+Rscript R/revision_2026/empirical/04_discriminating_tests.R
+Rscript R/revision_2026/figures/fig_helius_mechanisms.R
+Rscript R/revision_2026/figures/fig_helius_discriminating.R
 ```
 
-* `00_context_ising_core.R` — exact-likelihood Ising engine in which activations and (optionally)
-  couplings depend on person-level covariates. Median-split groups, continuous Slow Risk Load
-  effects and SRL-moderated coupling are all special cases of one likelihood (all 512 states
-  enumerated; Newton–Raphson with the exact Hessian; exact per-person sampling).
-* `01_data.R` — loads HELIUS through the perspective repo's scripts 00–03, or builds a synthetic
-  HELIUS-like data set (`SLOWFAST_DATA_MODE=synthetic`) for software testing only.
-* `02_fit_context_models.R` — **step 1**: shared coupling with SRL-shifted activations against group
-  and continuous "rewiring" models (LR tests, AIC/BIC, cross-validation; unadjusted and adjusted).
-* `03_sim_mechanisms.R` — **step 2**: simulates HELIUS-sized samples under null,
-  fixed-field, context, true-coupling and context+coupling mechanisms, runs the perspective-paper analysis
-  on each, and locates the observed results in each distribution.
-* `04_discriminating_tests.R` — **step 3**: other SRL splits, out-of-sample age and ethnicity
-  groupings, and the pattern of the 36 edge differences against each model's prediction.
+Step 1 fits nine models both without and with demographic covariates and uses five common cross-validation folds. The unadjusted sample has 23,283 participants. One participant lacks ethnicity, leaving 23,282 for adjusted fits. All 18 saved likelihoods were recomputed against the local HELIUS data during the audit and matched to numerical precision. Cross-validation and the full Monte Carlo analyses were checked against their cached outputs and scripts, but were not rerun in full during this audit.
 
-Figures: `R/revision_2026/figures/fig_helius_mechanisms.R` and `fig_helius_discriminating.R` read
-those outputs and write `figs/revision_2026/Figure_helius_*.pdf`.
+Step 2 uses the models with linear activation shifts for its context and context-plus-coupling mechanisms. The model with nonlinear activation and continuous coupling moderation is a separate fit comparison in Step 1. It must not be substituted when interpreting the Step 2 figures or the reported linear-model edge effects.
 
-Outputs go to `res/revision_2026/empirical/helius/` and contain aggregate estimates only. Synthetic
-test runs go to `res/revision_2026/empirical/synthetic/` (git-ignored). Run-size settings are
-environment variables documented at the top of each script.
+The age and ethnicity checks use the same participants with additional groupings. They are not independent or out-of-sample validation. Their result file is named b_additional_groupings.csv in this package. The LR_J_or_noncentrality column contains observed LR values for observed rows and population contrasts for model rows. Add 36 to the latter only when using the approximate mean finite-sample LR described in the manuscript. The plotted intervals come from replicated samples and require no such correction.
 
-## Figures (`figs/revision_2026/` + kept exceptions)
+Set SLOWFAST_DATA_MODE=synthetic to exercise the empirical pipeline without restricted data. This mode uses the bundled aggregate inputs. It produces artificial data and must not be interpreted as a replication of the HELIUS findings. Run-size variables are documented at the top of the scripts.
 
-| File | Manuscript figure |
-|---|---|
-| `figs/slow-fast-model-illustration_v2.png` | Figure 1 — model schematic |
-| `Figure2_context_baseline.pdf` | Figure 2 — context shifts symptom activation (Simulation 1) |
-| `Figure3_perturbation_recovery.pdf` / `Figure3_regimes.pdf` | Figure 3 — stress, recovery, and feedback (Simulations 2–3); `Figure3_regimes.pdf` also folds in the history-dependence check |
-| `Figure4_network_trio.pdf` + `Figure4_metric_strip.pdf` | Figure 4 — true vs. estimated symptom networks (Simulation 4) |
-| `fig_sim2_coupling_sensitivity.pdf` + `fig_sim2_coupling_criticality_check.pdf` | Appendix — sensitivity of recovery to symptom-coupling strength |
-| `Figure_S_window_check_revised.pdf` | Appendix B — observation-window check |
-| `figs/nct_structure_weighted.pdf`, `nct_strength_weighted.pdf`, `nct_edge_fp_weighted.pdf` | Appendix C — supplementary NCT robustness check |
+## Scope of the findings
 
-Each `.pdf` has a matching `.png` for quick preview. The NCT check (Appendix C) and the Figure 1
-schematic source files live outside `figs/revision_2026/` for historical reasons but are still
-directly referenced by the manuscript, so they're kept alongside it rather than archived.
+The empirical models evaluate the conditional cross-sectional distribution of symptoms. They do not estimate temporal recovery or symptom-to-context feedback. The age and ethnicity comparisons and the failures to reproduce some observed statistics are part of the reported results. NCT rejection under unequal thresholds also involves a departure from exchangeability, as discussed in Supplement S2.
 
-## Legacy content
+## Verification and license
 
-`R/scripts/`, `R/utils/`, `res/archive/`, `res/main/`, `res/heatmaps/`, `res/hysteresis/`,
-`res/network_check/`, `res/tuned/`, most of `figs/` and `img/`, and `quarto-docs/` all belong to
-an earlier mean-field Curie–Weiss version of the model (different parameterization, N=12 symptoms,
-`beta`/`J` notation) that predates the current revision. They're kept for provenance but are not
-reproducible against, and are not cited by, the current manuscript.
-
-## License
-
-This project is licensed under the GNU General Public License v3.0.
-
-You are free to use, modify, and redistribute the code, provided that
-derivative works are also distributed under the same license.
+AUDIT.txt records corrections and verification limits. figure_manifest.csv maps manuscript assets and records SHA-256 hashes. validation/ contains numerical checks and the reference audit. LICENSE contains the original GPL-3.0 license.

@@ -17,3 +17,7 @@ network_estimation_check_writeup.md
 # Empirical application: cached synthetic data and synthetic test runs
 /res/revision_2026/empirical/private/
 /res/revision_2026/empirical/synthetic/
+
+# Restricted source data
+inputs/perspective/data/*
+!inputs/perspective/data/README.txt

@@ -29,10 +29,7 @@ source("R/revision_2026/figures/theme_publication.R")   # shared theme_pub() + p
 # ------------------------------------------------------------------------
 P_values <- c(low = -0.6, middle = 0, high = 0.6)
 
-# Pilot defaults -- adjust per Step 6 if the burden distribution saturates.
-# Per the revision plan: if it saturates, adjust ONLY P values / tau /
-# omega strength / gamma strength. Do not touch simulate_fast_sweep()
-# itself -- that's the one shared model definition every script relies on.
+# Design used by the revised manuscript.
 T_burn   <- 200L
 T_post   <- 200L
 n_chains <- 200L
@@ -64,6 +61,7 @@ run_condition <- function(P, n_chains, T_burn, T_post) {
 # ------------------------------------------------------------------------
 # Run all three conditions
 # ------------------------------------------------------------------------
+RNGkind("Mersenne-Twister", "Inversion", "Rejection")
 set.seed(2026L)
 raw_list <- lapply(names(P_values), function(lbl) {
   P <- P_values[[lbl]]
@@ -102,7 +100,7 @@ trace_all <- bind_rows(lapply(raw_list, `[[`, "trace"))
 dir.create("res/revision_2026/sim1", recursive = TRUE, showWarnings = FALSE)
 dir.create("figs/revision_2026", recursive = TRUE, showWarnings = FALSE)
 
-saveRDS(list(burden = burden_all, symptom_activation = symptom_activation_all,
+saveRDS(list(burden = burden_all, symptom_activation = symptom_activation_all, trace = trace_all,
              params = list(tau = tau, omega = omega, gamma = gamma, symptoms = symptoms),
              design = list(P_values = P_values, T_burn = T_burn, T_post = T_post, n_chains = n_chains)),
         "res/revision_2026/sim1/sim1_raw.rds")
@@ -177,6 +175,7 @@ drift_check <- burden_all |>
 
 cat("\n=== BURN-IN DRIFT CHECK (want 'drift' close to 0) ===\n")
 print(drift_check)
+write.csv(drift_check, "res/revision_2026/sim1/sim1_burnin_check.csv", row.names = FALSE)
 cat("If |drift| is small relative to the between-condition differences in\n")
 cat("mean_M above, T_burn = 200 is adequate. If drift is still substantial\n")
 cat("(comparable in size to the low-vs-high P gap), increase T_burn and rerun.\n")
@@ -210,7 +209,7 @@ p2 <- ggplot(trace_all, aes(x = sweep, y = M)) +
   facet_wrap(~condition, ncol = 1) +
   scale_colour_manual(values = pal_context, guide = "none") +
   labs(x = "Sweep", y = "Symptom activation (M)",
-       title = sprintf("Simulation 1: burn-in trace (%d example chains per condition, bold = mean)", n_trace_chains),
+       title = sprintf("Simulation 1 burn-in trace (%d example chains per condition, bold = mean)", n_trace_chains),
        subtitle = "Shaded region = burn-in, excluded from analysis.") +
   theme_pub()
 

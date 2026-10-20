@@ -12,7 +12,7 @@
 #     median split predicts that people keep the J of their median-split
 #     group, whatever the split.
 #
-# (b) Out-of-sample groupings. The context model is fitted with SRL only. It
+# (b) Additional groupings of the same participants. The context model is fitted with SRL only. It
 #     then predicts, with no new parameters, what the perspective-paper analysis
 #     should find for Younger vs Older and Dutch vs Non-Dutch, given how SRL
 #     is distributed in those groups.
@@ -135,17 +135,17 @@ message("  Note: the median and quantile splits use different n, so compare each
 
 
 # ------------------------------------------------------------------------
-# (b) Out-of-sample groupings
+# (b) Additional groupings of the same participants
 # ------------------------------------------------------------------------
 
-message("(b) Out-of-sample groupings")
+message("(b) Additional groupings of the same participants")
 group_defs <- list(
   "Younger vs Older" = list(which(dat$older == 0), which(dat$older == 1)),
   "Dutch vs Non-Dutch" = list(which(dat$non_dutch == 0), which(dat$non_dutch == 1))
 )
 grouping <- do.call(rbind, lapply(names(group_defs), function(s)
   compare_split(s, group_defs[[s]][[1]], group_defs[[s]][[2]])))
-sf_write_csv(grouping, file.path(out_dir, "b_out_of_sample_groupings.csv"))
+sf_write_csv(grouping, file.path(out_dir, "b_additional_groupings.csv"))
 
 # Symptom-level activation differences: observed vs predicted from SRL alone
 act_rows <- list()

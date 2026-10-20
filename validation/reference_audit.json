@@ -1,0 +1,405 @@
+[
+  {
+    "key": "Borsboom2017",
+    "source": "10.1002/wps.20375",
+    "changed_fields": [],
+    "type": "article"
+  },
+  {
+    "key": "Dablanderetal2023",
+    "source": "10.1037/met0000450",
+    "changed_fields": [],
+    "type": "article"
+  },
+  {
+    "key": "Epskampetal2018",
+    "source": "10.1177/2167702617744325",
+    "changed_fields": [
+      "author"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "McEwen1998",
+    "source": "10.1056/nejm199801153380307",
+    "changed_fields": [
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "ravikumar2010high",
+    "source": "10.1214/09-aos691",
+    "changed_fields": [
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "mukherjee2024logistic",
+    "source": "https://jmlr.org/papers/v25/22-1040.html",
+    "changed_fields": [
+      "title",
+      "number",
+      "url"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "lunsmann2017transition",
+    "source": "10.1371/journal.pone.0186624",
+    "changed_fields": [
+      "author"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "beard2016network",
+    "source": "10.1017/s0033291716002300",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "borsboom2013network",
+    "source": "10.1146/annurev-clinpsy-050212-185608",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "bringmann2013network",
+    "source": "10.1371/journal.pone.0060188",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "cohen2019ten",
+    "source": "10.1146/annurev-psych-010418-102857",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "cramer2016major",
+    "source": "10.1371/journal.pone.0167490",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "dohrenwend2006inventorying",
+    "source": "10.1037/0033-2909.132.3.477",
+    "changed_fields": [
+      "author",
+      "pages",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "fried2020systems",
+    "source": "10.1186/s12916-020-01668-w",
+    "changed_fields": [
+      "author",
+      "doi",
+      "eid"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "hammen2006stress",
+    "source": "10.1002/jclp.20293",
+    "changed_fields": [
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "haslbeck2022estimating",
+    "source": "10.3758/s13428-021-01637-y",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "haslbeck2022modeling",
+    "source": "10.1037/met0000303",
+    "changed_fields": [
+      "author",
+      "pages",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "helmich2021early",
+    "source": "10.1016/j.copsyc.2021.02.008",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "ingram2005vulnerability",
+    "source": "10.4135/9781452231655.n2",
+    "changed_fields": [
+      "author",
+      "doi",
+      "booktitle",
+      "editor",
+      "publisher"
+    ],
+    "type": "incollection"
+  },
+  {
+    "key": "kroenke2001phq",
+    "source": "10.1046/j.1525-1497.2001.016009606.x",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "kruis2016three",
+    "source": "10.1038/srep34175",
+    "changed_fields": [
+      "doi",
+      "eid"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "liu2010stress",
+    "source": "10.1016/j.cpr.2010.04.010",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "lunansky2020personality",
+    "source": "10.1002/per.2263",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "masten2021resilience",
+    "source": "10.1146/annurev-clinpsy-081219-120307",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "marsman2018introduction",
+    "source": "10.1080/00273171.2017.1379379",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "mooij2020joint",
+    "source": "https://jmlr.org/papers/v21/17-123.html",
+    "changed_fields": [
+      "url"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "myin2009experience",
+    "source": "10.1017/s0033291708004947",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "neubauer2020studying",
+    "source": "10.1159/000507993",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "park2026rethinking",
+    "source": "10.31234/osf.io/u8wf5_v1",
+    "changed_fields": [
+      "author",
+      "doi",
+      "eprinttype",
+      "pubstate"
+    ],
+    "type": "online"
+  },
+  {
+    "key": "peel2021comparison",
+    "source": "10.1016/j.jadr.2021.100201",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "rnic2023vicious",
+    "source": "10.1037/bul0000390",
+    "changed_fields": [
+      "author",
+      "pages",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "robinaugh2020network",
+    "source": "10.1017/s0033291719003404",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "scheffer2009early",
+    "source": "10.1038/nature08227",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "van2023comparing",
+    "source": "10.1037/met0000476",
+    "changed_fields": [
+      "author",
+      "pages",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "van2015association",
+    "source": "10.1001/jamapsychiatry.2015.2079",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "van2014critical",
+    "source": "10.1073/pnas.1312114110",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "van2014new",
+    "source": "10.1038/srep05918",
+    "changed_fields": [
+      "author",
+      "doi",
+      "eid"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "vanbork2021latent",
+    "source": "10.1080/00273171.2019.1672515",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "wichers2014dynamic",
+    "source": "10.1017/s0033291713001979",
+    "changed_fields": [
+      "author",
+      "doi"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "park2024cyclic",
+    "source": "10.56296/aip00012",
+    "changed_fields": [
+      "author"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "park2026causalnet",
+    "source": "10.3758/s13428-026-03030-z",
+    "changed_fields": [
+      "author",
+      "number",
+      "eid"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "park2026precariousness",
+    "source": "10.1016/j.ssmmh.2026.100637",
+    "changed_fields": [
+      "author"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "park2026feedback",
+    "source": "10.1038/s41598-026-38747-6",
+    "changed_fields": [
+      "author",
+      "number",
+      "eid"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "elsenburg2026precariousness",
+    "source": "10.1007/s00127-026-03072-w",
+    "changed_fields": [
+      "author"
+    ],
+    "type": "article"
+  },
+  {
+    "key": "snijder2017cohort",
+    "source": "10.1136/bmjopen-2017-017873",
+    "changed_fields": [
+      "author"
+    ],
+    "type": "article"
+  }
+]

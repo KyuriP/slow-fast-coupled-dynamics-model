@@ -150,7 +150,7 @@ summ_corrected <- chain_summary |>
     # "≥5" rather than "5+", matching the proportion-language phrasing
     # used in the prose/column header (see the 2026-08-27 relabeling note
     # above) rather than probability notation.
-    high_label = sprintf("≥5 active: %.0f%%", 100 * pr_high)
+    high_label = sprintf("%.0f%%", 100 * pr_high)
   )
 
 # Label placement is data-driven rather than fixed: a fixed x-position
@@ -164,7 +164,7 @@ summ_corrected <- chain_summary |>
 # again; widen the multiplier rather than shrinking the text.
 label_x <- max(summ_corrected$mean_M) + 0.95
 x_axis_max <- label_x + 2.3
-sep_x   <- max(summ_corrected$mean_M) + 0.62   # light divider between the
+sep_x   <- max(summ_corrected$mean_M) + 0.82   # light divider between the
                                                 # mean-value column and the
                                                 # Pr(5+ active) column
 
@@ -211,7 +211,7 @@ pB <- ggplot(summ_corrected, aes(y = P_group, x = mean_M, colour = P_group)) +
            label = "Mean (95% CI)", hjust = 0, size = 3.0, colour = "grey35",
            fontface = "italic") +
   annotate("text", x = label_x, y = n_grp + 0.62,
-           label = "Proportion ≥5 active", hjust = 0, size = 3.0, colour = "grey35",
+           label = "Proportion\nwith 5+ active", hjust = 0, size = 3.0, colour = "grey35",
            fontface = "italic") +
   scale_colour_manual(values = pal_context_display, guide = "none") +
   scale_x_continuous(

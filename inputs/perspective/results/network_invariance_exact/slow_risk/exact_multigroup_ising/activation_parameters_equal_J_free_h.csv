@@ -1,0 +1,19 @@
+"model","group","symptom","h","baseline_probability_when_other_symptoms_zero"
+"equal_J_free_h","Low Slow Risk","anh",-2.19711324510355,0.100010020347165
+"equal_J_free_h","Low Slow Risk","dep",-3.62774505022088,0.0258880427610658
+"equal_J_free_h","Low Slow Risk","slp",-1.83759011701747,0.13733655455454
+"equal_J_free_h","Low Slow Risk","ene",-1.27703691223959,0.218055028782449
+"equal_J_free_h","Low Slow Risk","app",-2.63907997741488,0.0666652574840757
+"equal_J_free_h","Low Slow Risk","glt",-3.39808657599674,0.0323553174652318
+"equal_J_free_h","Low Slow Risk","con",-3.053130598296,0.0450825088863647
+"equal_J_free_h","Low Slow Risk","mot",-4.1064961431687,0.0161986491711417
+"equal_J_free_h","Low Slow Risk","sui",-5.36091195039272,0.00467466593406629
+"equal_J_free_h","High Slow Risk","anh",-1.88214574400008,0.132142603318905
+"equal_J_free_h","High Slow Risk","dep",-3.06037616686382,0.0447716127229583
+"equal_J_free_h","High Slow Risk","slp",-1.76212308272178,0.146524638035842
+"equal_J_free_h","High Slow Risk","ene",-1.1984869266604,0.231744493191513
+"equal_J_free_h","High Slow Risk","app",-2.37754998949615,0.0849007199051301
+"equal_J_free_h","High Slow Risk","glt",-3.24203218674463,0.0376142573526031
+"equal_J_free_h","High Slow Risk","con",-2.85350371590462,0.0545004880158288
+"equal_J_free_h","High Slow Risk","mot",-3.41467255646515,0.0318400445572479
+"equal_J_free_h","High Slow Risk","sui",-4.87405545682578,0.00758434737345004

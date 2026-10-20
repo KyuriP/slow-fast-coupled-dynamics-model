@@ -133,7 +133,7 @@ p_recovery <- ggplot(
   coord_cartesian(ylim = c(-0.3, 1.3)) +
   labs(x = "Steps since shock", y = "R(t)  (normalized excess activation)",
        title = "Sensitivity of recovery to symptom-coupling strength",
-       subtitle = expression(omega^{(c)} == c %.% omega * ",  topology fixed -- thin lines are individual chains (smoothed), bold = mean of 1000")) +
+       subtitle = expression(omega^{(c)} == c %.% omega * ",  topology fixed. Thin lines show smoothed chains. Bold lines show the mean.")) +
   theme_pub()
 
 dir.create("figs/revision_2026", recursive = TRUE, showWarnings = FALSE)

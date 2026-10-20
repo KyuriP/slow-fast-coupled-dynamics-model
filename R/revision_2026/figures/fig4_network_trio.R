@@ -178,7 +178,7 @@ plot_one <- function(W, title, edge_color_mat = NULL) {
 # genuinely useful in-figure (readers shouldn't have to hold ANH/DEP/SLP/...
 # in their head or flip to the caption). Kept as a single slim text line,
 # not a full legend() row.
-abbrev_key <- paste(sprintf("%s = %s", phq_abbrev, names(phq_abbrev)), collapse = "; ")
+abbrev_key <- paste(sprintf("%s = %s", phq_abbrev, names(phq_abbrev)), collapse = ", ")
 
 draw_abbrev_strip <- function() {
   par(mar = c(0, 0, 0, 0))

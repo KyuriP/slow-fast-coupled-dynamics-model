@@ -1,0 +1,27 @@
+Verification record for the revised manuscript package
+20 October 2026
+
+The manuscript and supplement were checked against the source scripts, cached results and figure assets. The empirical material is now contained directly in revised_manuscript_v5.tex. The separate empirical source is archived. The observation-window section remains commented out and is not part of the supplement.
+
+Corrections
+The cached Simulation 1 results belonged to a different random-number run. A fresh run of the original script reproduced the manuscript values exactly. This package uses that corrected cache and explicitly selects Mersenne-Twister, Inversion and Rejection before seed 2026. No reported manuscript result was changed to match a new analysis.
+
+The supplementary NCT account now describes rejection rates under unequal thresholds accurately and explains the departure from exchangeability. Its section and figure numbering follows the omission of the window section. The EWMA iteration uses the correct discrete-step indexing.
+
+The history comparison uses saved states from steps 1250 through 1500. The age and ethnicity analyses use additional groupings of the same participants. Their output was renamed from b_out_of_sample_groupings.csv to b_additional_groupings.csv.
+
+Forty-five cited reference records were checked against Crossref and publisher metadata. Author parsing, missing authors, page ranges, publication identifiers and several DOI errors were corrected in the manuscript bibliography. Preprints remain labeled as preprints.
+
+Verification performed
+A fresh Simulation 1 run reproduced mean symptom counts 1.64, 2.49 and 3.56 and the supplementary burn-in results. The 30-replicate Simulation 4 means and standard errors were recomputed. All 27 NCT condition summaries were recomputed from 2700 replicate rows. The mechanism simulation means and 95 percent intervals were recomputed from 1000 replicate rows.
+
+All 18 stored empirical likelihoods were independently evaluated against the authorized local HELIUS data. Differences were below 1e-9 and maximum absolute score gradients were below 0.01. The unadjusted sample contained 23283 people and the adjusted sample 23282. The verification CSV contains aggregate model-level values only.
+
+All 12 statistical PDF assets were regenerated from their checked caches. The conceptual schematic was copied from the current Overleaf source. The figure manifest records the resulting SHA-256 hashes. R source files passed parsing checks. The main manuscript compiled to 46 pages and the supplement to 16 pages without LaTeX errors or overfull boxes. Every page was inspected for layout, with additional inspection of dense tables and changed figures.
+
+Limits
+Cross-validation folds and the full Monte Carlo analyses were not rerun during this audit. Their saved outputs and settings were checked against the manuscript. Verifying saved likelihoods and cached summaries does not establish an independent replication of every analysis.
+
+HELIUS provides a cross-sectional test of the network-estimation implications. It does not validate the temporal recovery or feedback mechanism. A reduction in the signed sum of estimated coupling differences does not imply equality of all edges or identify a causal contribution of context. The age and ethnicity comparisons are not independent validation samples.
+
+Restricted HELIUS participant data are excluded. The package includes aggregate fitted parameters and simulated trajectories. Paper-specific funding, competing interests and data-use declarations remain for the author to complete.

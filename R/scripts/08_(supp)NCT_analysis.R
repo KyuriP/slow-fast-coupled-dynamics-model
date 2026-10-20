@@ -278,7 +278,9 @@ with_progress({
     )
 })
 
-raw_file <- sprintf("nct_mc_raw_%s.rds", analysis_tag)
+dir.create("res/NCT_analysis", recursive = TRUE, showWarnings = FALSE)
+dir.create("figs", recursive = TRUE, showWarnings = FALSE)
+raw_file <- sprintf("res/NCT_analysis/nct_mc_raw_%s.rds", analysis_tag)
 saveRDS(results, raw_file)
 
 # -----------------------------------------------------------------------------
@@ -324,7 +326,7 @@ summary_tbl <- results |>
 
 print(summary_tbl)
 
-summary_file <- sprintf("nct_mc_summary_%s.csv", analysis_tag)
+summary_file <- sprintf("res/NCT_analysis/nct_mc_summary_%s.csv", analysis_tag)
 write.csv(summary_tbl, summary_file, row.names = FALSE)
 
 # -----------------------------------------------------------------------------
@@ -363,7 +365,7 @@ plot_structure <- base_plot(
   summary_tbl,
   "reject_nwinv",
   sprintf("NCT structure invariance rejection rate (%s)", analysis_tag),
-  "Groups differ only in threshold; dashed = nominal 5%",
+  "Groups differ only in threshold. The dashed line marks 5%.",
   "Rejection rate"
 )
 
@@ -371,7 +373,7 @@ plot_strength <- base_plot(
   summary_tbl,
   "reject_glstr",
   sprintf("NCT global strength rejection rate (%s)", analysis_tag),
-  "Groups differ only in threshold; dashed = nominal 5%",
+  "Groups differ only in threshold. The dashed line marks 5%.",
   "Rejection rate"
 )
 
@@ -379,26 +381,26 @@ plot_edge_fp <- base_plot(
   summary_tbl,
   "fp_edge_05",
   sprintf("Edge-level false-positive rate (%s)", analysis_tag),
-  "Proportion of edges flagged at p < .05; dashed = nominal 5%",
+  "Proportion of edges flagged at p < .05. The dashed line marks 5%.",
   "False-positive rate"
 )
 
 ggsave(
-  sprintf("nct_structure_%s.pdf", analysis_tag),
+  sprintf("figs/nct_structure_%s.pdf", analysis_tag),
   plot_structure,
   width = 8.5,
   height = 4.8
 )
 
 ggsave(
-  sprintf("nct_strength_%s.pdf", analysis_tag),
+  sprintf("figs/nct_strength_%s.pdf", analysis_tag),
   plot_strength,
   width = 8.5,
   height = 4.8
 )
 
 ggsave(
-  sprintf("nct_edge_fp_%s.pdf", analysis_tag),
+  sprintf("figs/nct_edge_fp_%s.pdf", analysis_tag),
   plot_edge_fp,
   width = 8.5,
   height = 4.8

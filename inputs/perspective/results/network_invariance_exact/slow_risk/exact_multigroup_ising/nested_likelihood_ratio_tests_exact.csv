@@ -1,0 +1,5 @@
+"comparison","larger_model","restricted_model","LR_chisq","df","p_value"
+"Test equality of J while h remains group-specific","free_J_free_h","equal_J_free_h",119.166999656736,36,7.78679948136337e-11
+"Test equality of h while J remains group-specific","free_J_free_h","free_J_equal_h",112.619217277766,9,4.3031628926048e-20
+"Test equality of h given equal J","equal_J_free_h","equal_J_equal_h",3228.49102452979,9,0
+"Test equality of J given equal h","free_J_equal_h","equal_J_equal_h",3235.03880690876,36,0

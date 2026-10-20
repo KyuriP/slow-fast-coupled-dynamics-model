@@ -1,0 +1,2 @@
+"comparison","group_1","group_2","n_group_1","n_group_2","network_structure_statistic_M","network_structure_p","global_strength_group_1","global_strength_group_2","global_strength_difference_S","global_strength_p","permutations"
+"Low versus High Slow Risk","Low Slow Risk","High Slow Risk",11717,11566,0.319266476895371,0.378062193780622,22.6150606503624,23.7310554402311,1.11599478986869,0.0036996300369963,10000
