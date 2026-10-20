@@ -147,6 +147,9 @@ Rscript R/revision_2026/empirical/04_discriminating_tests.R        # step 3
 * `04_discriminating_tests.R` — **step 3**: other SRL splits, out-of-sample age and ethnicity
   groupings, and the pattern of the 36 edge differences against each model's prediction.
 
+Figures: `R/revision_2026/figures/fig_helius_mechanisms.R` and `fig_helius_discriminating.R` read
+those outputs and write `figs/revision_2026/Figure_helius_*.pdf`.
+
 Outputs go to `res/revision_2026/empirical/helius/` and contain aggregate estimates only. Synthetic
 test runs go to `res/revision_2026/empirical/synthetic/` (git-ignored). Run-size settings are
 environment variables documented at the top of each script.

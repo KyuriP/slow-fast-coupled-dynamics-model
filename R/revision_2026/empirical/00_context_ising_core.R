@@ -300,20 +300,39 @@ ci_lrt <- function(big, small) {
 # K-fold cross-validated log-likelihood (per person, held-out)
 # ------------------------------------------------------------------------
 
-ci_cv_loglik <- function(S, X, Z, setup, K = 10L, seed = 1L) {
+# Held-out log-likelihood for every person. Folds are a random split of the
+# rows (same seed -> same folds for every model), so models can be compared
+# person by person.
+ci_cv_person_loglik <- function(S, X, Z, setup, K = 10L, seed = 1L) {
   set.seed(seed)
   T_all <- ci_features(X, setup$pair_index)
   fold <- sample(rep_len(seq_len(K), nrow(Z)))
-  out <- numeric(K)
+  out <- numeric(nrow(Z))
   for (k in seq_len(K)) {
     tr <- fold != k
     f <- ci_fit(S, NULL, Z[tr, , drop = FALSE], setup,
                 T_obs = T_all[tr, , drop = FALSE], hessian = FALSE)
-    out[k] <- -as.numeric(ci_negll_grad(f$par, S, T_all[!tr, , drop = FALSE],
-                                        Z[!tr, , drop = FALSE], setup,
-                                        want_grad = FALSE))
+    Theta <- f$B %*% t(Z[!tr, , drop = FALSE])
+    eta <- setup$F_states %*% Theta
+    mx <- apply(eta, 2L, max)
+    logZ <- mx + log(colSums(exp(sweep(eta, 2L, mx))))
+    out[!tr] <- rowSums(T_all[!tr, , drop = FALSE] * t(Theta)) - logZ
   }
-  sum(out) / nrow(Z)   # mean held-out log-likelihood per person
+  out
+}
+
+ci_cv_loglik <- function(S, X, Z, setup, K = 10L, seed = 1L) {
+  mean(ci_cv_person_loglik(S, X, Z, setup, K = K, seed = seed))
+}
+
+# Paired comparison of two models' held-out log-likelihoods (per person).
+ci_cv_paired <- function(ll_a, ll_b, label_a, label_b) {
+  d <- ll_a - ll_b
+  se <- stats::sd(d) / sqrt(length(d))
+  data.frame(model_a = label_a, model_b = label_b,
+             mean_diff_per_person = mean(d), se = se,
+             ci_lower = mean(d) - 1.96 * se, ci_upper = mean(d) + 1.96 * se,
+             stringsAsFactors = FALSE)
 }
 
 

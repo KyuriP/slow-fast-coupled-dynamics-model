@@ -23,16 +23,24 @@
 #   ctx_item_quad     + SRL^2 on h (nonlinear threshold shift)
 #   ctx_item_groupJ   ctx_item + High/Low split moderates J  does the group J
 #                                                            difference survive?
+#   ctx_quad_groupJ   ctx_item_quad + split moderates J      same, nonlinear h
 #   ctx_coupling      SRL moderates h and J continuously     continuous rewiring
 #   ctx_quad_coupling ctx_coupling + SRL^2 on h              robustness
 #
 # Key tests:
 #   group_free vs group_commonJ      reproduces the perspective-paper LR test of J
 #   ctx_item_groupJ vs ctx_item      the same J test once thresholds track SRL
+#   ctx_quad_groupJ vs ctx_item_quad same again with nonlinear thresholds
 #   ctx_coupling vs ctx_item         continuous SRL moderation of coupling
 #
 # Each model is fitted unadjusted and adjusted (age, gender, ethnicity shift
-# the activations; they never moderate J).
+# the activations; they never moderate J). Covariates: age (z), female (0/1),
+# non-Dutch origin (0/1), each with its own effect on every h -> 27 extra
+# parameters.
+#
+# Cross-validation: 5 random folds (fixed seed, same folds for all models).
+# SRL is standardized once on the full sample, not within training folds.
+# Paired held-out differences per person are saved with their SEs.
 #
 # Run from this repository's root (slow-fast-computational-model):
 #   Rscript R/revision_2026/empirical/02_fit_context_models.R
@@ -69,6 +77,7 @@ model_specs <- list(
   ctx_item          = list(srl = "h_item"),
   ctx_item_quad     = list(srl = "h_item", srl2 = "h_item"),
   ctx_item_groupJ   = list(srl = "h_item", high = "J_item"),
+  ctx_quad_groupJ   = list(srl = "h_item", srl2 = "h_item", high = "J_item"),
   ctx_coupling      = list(srl = "hJ_item"),
   ctx_quad_coupling = list(srl = "hJ_item", srl2 = "h_item")
 )
@@ -113,6 +122,7 @@ lrt_table <- function(f) {
   rbind(
     cbind(test = "J differs between groups (perspective-paper test)", ci_lrt(f$group_free, f$group_commonJ)),
     cbind(test = "J differs between groups, given SRL-shifted thresholds", ci_lrt(f$ctx_item_groupJ, f$ctx_item)),
+    cbind(test = "J differs between groups, given nonlinear thresholds", ci_lrt(f$ctx_quad_groupJ, f$ctx_item_quad)),
     cbind(test = "J moderated continuously by SRL", ci_lrt(f$ctx_coupling, f$ctx_item)),
     cbind(test = "J moderated by SRL, given nonlinear thresholds", ci_lrt(f$ctx_quad_coupling, f$ctx_item_quad)),
     cbind(test = "Nonlinear (SRL^2) threshold shift", ci_lrt(f$ctx_item_quad, f$ctx_item)),
@@ -158,25 +168,37 @@ for (adjusted in c(FALSE, TRUE)) {
   comp <- ci_compare(fits)
   if (RUN_CV) {
     message("Cross-validating (", CV_FOLDS, " folds) ...")
-    comp$cv_loglik_per_person <- sapply(names(fits), function(m) {
+    rows <- rows_for(adjusted)
+    cv_ll <- sapply(names(fits), function(m) {
       eff <- model_specs[[m]]; if (adjusted) eff <- c(eff, adjust_effects)
-      rows <- rows_for(adjusted)
       b <- build(eff, rows)
-      ci_cv_loglik(b$S, X[rows, , drop = FALSE], b$Z, st, K = CV_FOLDS, seed = SEED)
+      ci_cv_person_loglik(b$S, X[rows, , drop = FALSE], b$Z, st, K = CV_FOLDS, seed = SEED)
     })
+    comp$cv_loglik_per_person <- colMeans(cv_ll)
     comp$cv_delta_vs_best <- comp$cv_loglik_per_person - max(comp$cv_loglik_per_person)
+    # Same folds for every model, so differences are paired by person.
+    pairs <- list(c("ctx_item", "group_commonJ"),
+                  c("ctx_item_quad", "ctx_item"),
+                  c("ctx_coupling", "ctx_item"),
+                  c("ctx_quad_coupling", "ctx_item_quad"),
+                  c("ctx_quad_groupJ", "ctx_item_quad"))
+    sf_write_csv(do.call(rbind, lapply(pairs, function(pr)
+      ci_cv_paired(cv_ll[, pr[1]], cv_ll[, pr[2]], pr[1], pr[2]))),
+      file.path(out_dir, paste0("cv_paired_differences_", tag, ".csv")))
   }
   sf_write_csv(comp, file.path(out_dir, paste0("model_comparison_", tag, ".csv")))
   sf_write_csv(lrt_table(fits), file.path(out_dir, paste0("likelihood_ratio_tests_", tag, ".csv")))
 
   ce_cont <- coupling_effects(fits$ctx_coupling, "srl")
   ce_grp <- coupling_effects(fits$ctx_item_groupJ, "high")
+  ce_grp_quad <- coupling_effects(fits$ctx_quad_groupJ, "high")
   ce_free <- coupling_effects(fits$group_free, "high")
   sf_write_csv(ce_cont$edges, file.path(out_dir, paste0("coupling_by_srl_edges_", tag, ".csv")))
   sf_write_csv(ce_grp$edges, file.path(out_dir, paste0("coupling_group_given_ctx_edges_", tag, ".csv")))
   sf_write_csv(rbind(
     cbind(model = "group_free (High - Low)", ce_free$total),
     cbind(model = "ctx_item_groupJ (High - Low, thresholds track SRL)", ce_grp$total),
+    cbind(model = "ctx_quad_groupJ (High - Low, nonlinear thresholds)", ce_grp_quad$total),
     cbind(model = "ctx_coupling (per SD SRL)", ce_cont$total)
   ), file.path(out_dir, paste0("total_coupling_change_", tag, ".csv")))
   sf_write_csv(threshold_effects(fits$ctx_item, "srl"),

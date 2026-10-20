@@ -104,3 +104,21 @@ pal_arm      <- c(baseline = col_off, naive = col_naive, adjusted = col_adjusted
 # summary panels) -- no reason to change a figure that already works.
 qgraph_pos_col <- "#1565C0"
 qgraph_neg_col <- "#C62828"
+
+# ------------------------------------------------------------------------
+# Empirical application (HELIUS) -- generating mechanisms. Same color for a
+# mechanism in both empirical figures; reuses the colors above where the
+# meaning matches (null = reference grey, context = adjusted green).
+# ------------------------------------------------------------------------
+pal_mechanism <- c(
+  "Null"               = col_off,
+  "Fixed field"        = "#C9A13B",
+  "Context"            = col_adjusted,
+  "Group rewiring"     = col_high,
+  "Context + coupling" = col_on
+)
+mechanism_labels <- c(
+  null = "Null", fixed_field = "Fixed field", context = "Context",
+  true_coupling = "Group rewiring", group_rewiring = "Group rewiring",
+  context_coupling = "Context + coupling"
+)

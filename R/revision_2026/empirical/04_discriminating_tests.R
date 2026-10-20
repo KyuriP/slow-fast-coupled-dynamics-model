@@ -17,10 +17,10 @@
 #     should find for Younger vs Older and Dutch vs Non-Dutch, given how SRL
 #     is distributed in those groups.
 #
-# (c) Pattern of edge differences. For the median split, the context model
-#     predicts a specific vector of 36 apparent J differences. We test the
-#     observed differences against that prediction (Wald chi-square with the
-#     observed covariance), alongside the test against zero.
+# (c) Pattern of edge differences. For the median split, each fitted model
+#     predicts a vector of 36 apparent J differences. We compare the observed
+#     differences with these predictions descriptively (correlation, RMS
+#     discrepancy), next to a Wald test of the observed differences against 0.
 #
 # Predictions come from expected sufficient statistics (exact, no noise);
 # prediction intervals for the observed statistic come from replications
@@ -184,36 +184,23 @@ edge_tab <- data.frame(edge = st$feat_names[J_rows], dJ_observed = dJ_obs,
                        se = sqrt(diag(V)), dJ_pred_context = dJ_ctx,
                        dJ_pred_context_coupling = dJ_cc)
 sf_write_csv(edge_tab, file.path(out_dir, "c_edge_differences.csv"))
-wtab <- rbind(
-  data.frame(target = "zero (no difference)", t(wald(rep(0, st$q)))),
-  data.frame(target = "context model prediction", t(wald(dJ_ctx))),
-  data.frame(target = "context + coupling model prediction", t(wald(dJ_cc)))
+# Only the test against zero is a proper Wald test. The model predictions are
+# fitted to the same people, so comparing against them is kept descriptive:
+# correlation and root-mean-square discrepancy, no p-value.
+rms <- function(a, b) sqrt(mean((a - b)^2))
+wtab <- data.frame(
+  target = c("zero (no difference)", "context model prediction",
+             "context + coupling model prediction"),
+  wald_chisq = c(wald(rep(0, st$q))[["chisq"]], NA, NA),
+  df = c(st$q, NA, NA),
+  p = c(wald(rep(0, st$q))[["p"]], NA, NA),
+  cor_observed_vs_target = c(NA, stats::cor(dJ_obs, dJ_ctx), stats::cor(dJ_obs, dJ_cc)),
+  rms_discrepancy = c(rms(dJ_obs, 0), rms(dJ_obs, dJ_ctx), rms(dJ_obs, dJ_cc))
 )
-wtab$cor_observed_vs_target <- c(NA, stats::cor(dJ_obs, dJ_ctx), stats::cor(dJ_obs, dJ_cc))
 sf_write_csv(wtab, file.path(out_dir, "c_edge_pattern_wald.csv"))
 
 
-# ------------------------------------------------------------------------
-# Figure
-# ------------------------------------------------------------------------
+# Figure: see R/revision_2026/figures/fig_helius_discriminating.R
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-  library(ggplot2)
-  both <- rbind(cbind(panel = "SRL splits", splits), cbind(panel = "Other groupings", grouping))
-  pr <- both[both$source != "observed", ]
-  ob <- both[both$source == "observed", ]
-  g <- ggplot(pr, aes(y = split, x = (LR_J_q025 + LR_J_q975) / 2, colour = source)) +
-    geom_errorbarh(aes(xmin = LR_J_q025, xmax = LR_J_q975), height = .3,
-                   position = position_dodge(width = .6)) +
-    geom_point(data = ob, aes(x = LR_J_or_noncentrality, y = split), colour = "black",
-               shape = 4, size = 3, inherit.aes = FALSE) +
-    facet_wrap(~ panel, scales = "free_y", ncol = 1) +
-    labs(x = "Likelihood-ratio statistic for equal J (df = 36)", y = NULL,
-         colour = "95% interval under",
-         caption = "Cross: observed. Bars: replications from each fitted model.") +
-    theme_minimal(base_size = 11) + theme(legend.position = "bottom")
-  ggsave(file.path(out_dir, "fig_discriminating_tests.pdf"), g, width = 8.5, height = 6)
-  ggsave(file.path(out_dir, "fig_discriminating_tests.png"), g, width = 8.5, height = 6, dpi = 200)
-}
 
 message("Step 3 complete. Results in ", normalizePath(out_dir))

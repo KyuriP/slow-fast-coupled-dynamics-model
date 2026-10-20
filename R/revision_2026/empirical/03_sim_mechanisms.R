@@ -249,31 +249,8 @@ if (N_FULL_NCT_REPS > 0L) {
 }
 
 
-# ------------------------------------------------------------------------
-# Figure: where the observed statistics fall under each mechanism
-# ------------------------------------------------------------------------
+# Figure: see R/revision_2026/figures/fig_helius_mechanisms.R
 
-if (requireNamespace("ggplot2", quietly = TRUE)) {
-  library(ggplot2)
-  show <- c(LR_J = "LR test of equal J (df = 36)",
-            sum_dJ_free = "Total coupling difference, High - Low",
-            dh_slp_free = "Sleep activation difference (free model)",
-            S_signed = "Global strength difference (IsingFit)")
-  long <- do.call(rbind, lapply(names(show), function(v)
-    data.frame(condition = reps$condition, metric = show[[v]], value = reps[[v]])))
-  long <- long[is.finite(long$value), ]
-  long$condition <- factor(long$condition, levels = names(conditions))
-  obs_long <- data.frame(metric = unname(show), value = unlist(observed[names(show)]))
-  g <- ggplot(long, aes(value, fill = condition)) +
-    geom_density(alpha = .45, colour = NA) +
-    geom_vline(data = obs_long, aes(xintercept = value), linetype = 2) +
-    facet_wrap(~ metric, scales = "free", ncol = 2) +
-    labs(x = NULL, y = "Density", fill = "Generating mechanism",
-         caption = "Dashed line: observed data. Distributions: simulated replications of the perspective-paper analysis.") +
-    theme_minimal(base_size = 11) + theme(legend.position = "bottom")
-  ggsave(file.path(out_dir, "fig_conditions_vs_observed.pdf"), g, width = 9, height = 6.5)
-  ggsave(file.path(out_dir, "fig_conditions_vs_observed.png"), g, width = 9, height = 6.5, dpi = 200)
-}
 
 writeLines(c(
   paste("Data mode:", sf_mode()),
