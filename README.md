@@ -1,12 +1,12 @@
-# When Context Looks Like Coupling in a Slow–Fast Framework for Psychological Dynamics
+# When Context Looks Like Coupling in Symptom Network Comparisons
 
-Analysis package for revised_manuscript_v5, checked on 20 October 2026. This package contains the current simulation code, aggregate empirical results, simulated trajectories, and figure sources. It is based on repository commit 11e3ebd06e5dcff11c8bedb3e5544b1ee445ae17 with the corrections recorded in AUDIT.txt. It makes no claim about publication or review status.
+Analysis package for revised_manuscript_v5, prepared for Psychological Methods on 20 October 2026. It contains the simulation code, aggregate empirical results, simulated trajectories, and figure sources used in the revised manuscript. Simulation 5 was executed in full for this revision. AUDIT.txt distinguishes those new runs from the earlier empirical and simulation checks. This package makes no claim about publication or review status.
 
 ## Start here
 
 Run commands from this directory in separate, fresh R sessions. The checked environment used R 4.4.2. Exact installed package versions are in session-info.txt. Install the packages loaded at the top of each script from CRAN before running it. The code does not install packages automatically.
 
-The four simulations concern a nine-symptom system. The separate NCT check uses twelve symptoms. Files for older exploratory analyses may remain under R/revision_2026 and res/revision_2026, but only the analyses in the map below contribute to this manuscript. In particular, the observation-window analysis and its figures are not part of the submitted supplement.
+The five simulations concern a nine-symptom system. The separate NCT check uses twelve symptoms. Files for older exploratory analyses may remain under R/revision_2026 and res/revision_2026, but only the analyses in the map below contribute to this manuscript. In particular, the observation-window analysis and its figures are not part of the submitted supplement.
 
 ## Figures and their sources
 
@@ -19,12 +19,15 @@ Paths in the third column are relative to R/revision_2026 unless stated otherwis
 | Main 3 | figs/revision_2026/Figure3_perturbation_recovery.pdf | 02_sim_stress_recovery.R, then figures/fig3_perturbation_recovery.R |
 | Main 4 | figs/revision_2026/Figure3_regimes.pdf | 03c_sim_feedback_shock_grid_extended.R and 05_supp_regime_history_dependence.R, then figures/fig3_regimes.R |
 | Main 5 | figs/revision_2026/Figure4_network_trio.pdf and Figure4_metric_strip.pdf | 04_sim_network_estimation.R and 04b_sim_network_estimation_replicated.R, then figures/fig4_network_trio.R and figures/fig4_metric_strip.R |
-| Main 6 | figs/revision_2026/Figure_helius_mechanisms.pdf | empirical/02_fit_context_models.R and empirical/03_sim_mechanisms.R, then figures/fig_helius_mechanisms.R |
-| Main 7 | figs/revision_2026/Figure_helius_discriminating.pdf | empirical/04_discriminating_tests.R, then figures/fig_helius_discriminating.R |
+| Main 6 | figs/revision_2026/Figure_sim5_recovery.pdf | 07_sim_context_measurement.R, then figures/fig5_context_measurement.R |
+| Main 7 | figs/revision_2026/Figure_helius_mechanisms.pdf | empirical/02_fit_context_models.R and empirical/03_sim_mechanisms.R, then figures/fig_helius_mechanisms.R |
+| Main 8 | figs/revision_2026/Figure_helius_discriminating.pdf | empirical/04_discriminating_tests.R, then figures/fig_helius_discriminating.R |
 | Supplement S1 | figs/revision_2026/fig_sim1_burnin_trace.pdf | 01_sim_context_baseline.R |
 | Supplement S2 | figs/revision_2026/fig_sim2_coupling_sensitivity.pdf | 02b_sim_stress_recovery_coupling_sensitivity.R, then 02c_sim2_coupling_sensitivity_figure.R |
 | Supplement S3 | figs/nct_structure_weighted.pdf and nct_strength_weighted.pdf | R/scripts/08_(supp)NCT_analysis.R |
 | Supplement S4 | figs/nct_edge_fp_weighted.pdf | R/scripts/08_(supp)NCT_analysis.R |
+| Supplement S5 | figs/revision_2026/Figure_sim5_signed.pdf | 07_sim_context_measurement.R, then figures/fig5_context_measurement.R |
+| Supplement S6 | figs/revision_2026/Figure_sim5_changed.pdf | 07_sim_context_measurement.R, then figures/fig5_context_measurement.R |
 
 The main Simulation 3 feedback-on versus feedback-off numerical comparison additionally uses 03_sim_feedback.R and res/revision_2026/sim3. The history check uses steps 1250 through 1500, saved every five steps. Simulation 4's network diagrams show the single-run example, whereas its numerical summaries and metric panels use 30 independent replicates.
 
@@ -38,6 +41,57 @@ Rscript R/revision_2026/figures/fig2_context_baseline.R
 ```
 
 The Simulation 1 script now explicitly selects Mersenne-Twister, Inversion and Rejection before setting seed 2026. A fresh run reproduces the manuscript means and the supplementary burn-in table. Its corrected cache is included. Run the other simulation and plotting scripts listed above in fresh Rscript processes. Their computational demands differ substantially. The NCT simulation performs 100 replicates for each of 27 conditions with 250 permutations per test. These are the settings reported in the supplement, not a high-precision calibration study.
+
+## New recovery study
+
+Simulation 5 has six generating scenarios, two sample sizes, and 500 repetitions
+per combination, giving 6,000 two-group datasets. Five analysis methods are
+applied to each dataset. They omit context or include a measure with within-group
+reliability 0.2, 0.5, 0.8, or 1. All 36 group coupling differences remain free.
+The primary target is recovery of these structural differences. The study uses
+ordinary nodewise regression and does not introduce a new estimator.
+
+```sh
+Rscript R/revision_2026/07_sim_context_measurement.R 500 4
+Rscript R/revision_2026/figures/fig5_context_measurement.R
+Rscript validation/check_sim5_independent.R
+```
+
+The simulation requires Rcpp and lpSolve. RcppArmadillo and a working C++
+toolchain enable the faster backend. If compilation fails, the script uses
+standard R. A third argument `R` explicitly selects that backend. It was checked
+against the compiled implementation on 24 datasets. Use one worker on Windows.
+For a small execution check, use `2 1 R`. Runs with fewer than 500 repetitions
+write to sim5_pilot and do not overwrite the paper's results. The plotting
+script expects the full 30,000 method comparison rows.
+
+The design record in R/revision_2026/sim5_design.txt was written before
+execution. It is not a public preregistration. Its numerical amendment explains
+why the initial convergence check was supplemented with separation checks.
+The scenario grid and seeds did not change. Separation affected 78 of 3,000
+datasets with 500 participants per group and none with 2,000 per group. All five
+methods failed on the same datasets. Summaries therefore use common successful
+datasets, and their denominators are explicit. No failed estimate is replaced
+by zero.
+
+The new study draws independent profiles from the exact conditional equilibrium
+distribution. It does not simulate temporal feedback. It varies context and
+couplings in one nine-symptom topology with linear effects, exogenous context,
+and independent measurement error. Its groups are defined by generating
+distributions, rather than by splitting a measured score as in HELIUS.
+
+res/revision_2026/sim5 contains all replicate metrics, all edge estimates,
+edge-specific and paired summaries, failure counts, seed information, package
+versions, and numerical validation records. The primary reported error is the
+mean of the replicate RMSE values across 36 coupling differences. It is not the
+root of a pooled mean squared error. Error bars show Monte Carlo uncertainty
+across valid replicates.
+
+Independent checks compare state probabilities with their logistic
+conditionals, compare the optimized fitter with standard R glm, replay one
+successful dataset from every scenario and sample size using R enumeration,
+and verify the contextual-mixture identity in Supplement S3. The plotting
+script also reconstructs the primary metrics from the saved edge estimates.
 
 ## HELIUS data and empirical reproduction
 
@@ -53,7 +107,7 @@ Rscript R/revision_2026/figures/fig_helius_mechanisms.R
 Rscript R/revision_2026/figures/fig_helius_discriminating.R
 ```
 
-Step 1 fits nine models both without and with demographic covariates and uses five common cross-validation folds. The unadjusted sample has 23,283 participants. One participant lacks ethnicity, leaving 23,282 for adjusted fits. All 18 saved likelihoods were recomputed against the local HELIUS data during the audit and matched to numerical precision. Cross-validation and the full Monte Carlo analyses were checked against their cached outputs and scripts, but were not rerun in full during this audit.
+Step 1 fits nine models both without and with demographic covariates and uses five common cross-validation folds. The unadjusted sample has 23,283 participants. One participant lacks ethnicity, leaving 23,282 for adjusted fits. All 18 saved likelihoods were recomputed against the local HELIUS data during the audit and matched to numerical precision. The empirical cross-validation and earlier Monte Carlo analyses were checked against their cached outputs and scripts, but were not rerun in full during the earlier audit. The new Simulation 5 was run in full.
 
 Step 2 uses the models with linear activation shifts for its context and context-plus-coupling mechanisms. The model with nonlinear activation and continuous coupling moderation is a separate fit comparison in Step 1. It must not be substituted when interpreting the Step 2 figures or the reported linear-model edge effects.
 

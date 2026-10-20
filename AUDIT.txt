@@ -1,3 +1,59 @@
+Psychological Methods revision verification
+20 October 2026
+
+Current documents
+The revised manuscript has 48 double-spaced pages and the supplement has 25.
+Both compile without errors, unresolved references or citations, or overfull
+boxes. All pages were visually inspected, with dense new tables and equations
+also inspected at full size. The main file contains both the scientific abstract
+and a nontechnical abstract. The empirical application remains embedded in v5.
+The observation-window section remains excluded.
+
+New analysis
+Simulation 5 was run in full for 6,000 datasets and five methods per dataset.
+Its design varies true coupling differences, contextual differences, sample
+size and context measurement reliability. It reports edge recovery, aggregate
+contrasts, Monte Carlo uncertainty and fitting failures. Accurate adjustment
+improves some contrasts and slightly worsens others. These limits are retained
+in the manuscript rather than omitted from the presentation.
+
+Separation affected 78 datasets at 500 participants per group and none at 2,000.
+All methods failed on the same datasets. Reported recovery is conditional on
+estimability. The design record documents the numerical amendment made after
+the initial execution. Scenarios, seeds and repetition counts did not change.
+
+Independent numerical checks
+The maximum conditional log-odds discrepancy was below 3e-15.
+Twelve independent R replays covered every scenario and sample size. The
+largest coefficient discrepancy was below 2.3e-7.
+The standard R backend matched 24 datasets within 6.6e-9.
+All 29,610 valid method comparison rows had RMSE and signed-sum metrics
+independently reconstructed from saved edges to within 1e-12.
+The contextual-mixture identity was numerically checked over all pairs and
+configurations of the remaining symptoms with maximum discrepancy below 7e-15.
+Detailed records are in res/revision_2026/sim5.
+
+References and figures
+The Morris, White and Crowther simulation-study reference was added and checked
+against the primary publication. Earlier reference corrections were retained.
+Three new figures were generated from the final checked simulation results.
+figure_manifest.csv covers all 16 manuscript and supplementary figure assets.
+All corresponding files match across the source project and analysis package.
+
+Scope
+This revision does not validate temporal dynamics with HELIUS, identify causal
+symptom effects, or establish the performance of a new estimator. Simulation 5
+evaluates recovery in the specified generating conditions. The empirical
+cross-validation and earlier Monte Carlo studies were not rerun in full for
+this revision. The checks described below remain the evidence for them.
+
+Paper-specific funding, competing interests and data-use declarations remain
+for the author. No manuscript has been submitted.
+
+Earlier package audit, before the Psychological Methods revision
+The page and figure counts in the historical record below describe the earlier
+version. The current counts are given above.
+
 Verification record for the revised manuscript package
 20 October 2026
 

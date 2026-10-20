@@ -1,0 +1,1 @@
+Standard R fallback reproduced 24 datasets with maximum coefficient discrepancy 6.54279597167573e-09

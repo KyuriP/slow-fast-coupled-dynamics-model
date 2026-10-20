@@ -1,0 +1,4 @@
+Conditional log-odds maximum error 2.6645352591e-15
+Nodewise fitter versus R glm maximum errors 3.75240305495e-09 4.37010061471e-09
+Sampler maximum marginal z score 2.62625833529284
+The sampler check uses 100000 independent profiles at a fixed context.

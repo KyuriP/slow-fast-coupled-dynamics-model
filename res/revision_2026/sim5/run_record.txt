@@ -1,0 +1,6 @@
+Started 2026-10-20 16:24:27.769112
+Finished 2026-10-20 16:26:27.291541
+Failed method fits 390
+Maximum successful score 9.99907629195551e-08
+Repetitions per scenario and sample size 500
+Backend RcppArmadillo compiled implementation

@@ -1,0 +1,3 @@
+Maximum mixture identity discrepancy 6.43929354282591e-15
+Minimum additional conditional association 0.0197822870413926
+Maximum replay discrepancy 2.24666624859537e-07

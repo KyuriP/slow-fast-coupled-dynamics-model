@@ -1,0 +1,89 @@
+Simulation 5 design record
+Written on 20 October 2026 before running the new simulation
+
+Aim
+Assess recovery of between-group differences in structural symptom couplings
+when context differs between groups, its measurement is imperfect, and true
+couplings may also differ. This is a parameter recovery study, not an evaluation
+of a new estimator or a test of causal identification from observational data.
+
+Generating model
+Use the nine symptoms, baseline activation parameters, ten nonzero couplings,
+and contextual sensitivities already specified in 00_parameters_uncentered01.R.
+Draw independent symptom profiles exactly from all 512 states of the
+conditional equilibrium Ising distribution. The context is constant for each
+person. There is no simulated temporal feedback in this study.
+
+Six scenarios
+1 Neither difference. Both groups have P distributed N(0, 0.6^2) and equal J.
+2 Context only. Group 0 has P distributed N(-0.5, 0.35^2), group 1
+  N(0.5, 1^2), and both have equal J.
+3 Coupling only. Both groups have P distributed N(0, 0.6^2). Group 1 has
+  three couplings increased by 0.30.
+4 Both differences. Context differs as in scenario 2 and couplings as in 3.
+5 Balanced coupling changes. Context differs as in scenario 2. The
+  anhedonia-depressed coupling increases by 0.30 and the sleep-energy
+  coupling decreases by 0.30, leaving the signed sum unchanged.
+6 Context mean only. Group 0 has P distributed N(-0.5, 0.6^2), group 1
+  N(0.5, 0.6^2), and couplings are equal.
+
+The three increasing couplings are anhedonia-depressed, sleep-energy, and
+energy-concentration. These were chosen before execution and are not fitted
+to HELIUS. The baseline topology is fixed across scenarios.
+
+Sample sizes and repetitions
+500 and 2000 independent people per group. 500 independent replicates per
+scenario and sample size, totaling 6000 datasets with two groups each.
+All methods use the same profiles within a replicate. Replicate seeds depend
+only on scenario, sample size, and replicate number. The number of replicates
+is fixed before execution, not increased until a desired conclusion appears.
+Monte Carlo standard errors quantify remaining simulation uncertainty.
+
+Methods
+Unpenalized nodewise logistic regression with the two directed coefficients
+for each symptom pair averaged. Fit each group separately, allowing all 36
+couplings to differ in every method.
+Compare omission of context, inclusion of true P, and inclusion of a noisy
+measurement W at within-group reliability 0.8, 0.5, or 0.2.
+W = P + sigma_g sqrt((1-r)/r) epsilon, with epsilon standard normal and
+independent of context and symptoms. sigma_g is the generating standard
+deviation of P within group g. The same epsilon is reused across reliability
+levels. Reliability is controlled by design, not estimated from each sample.
+There is no correction for measurement error in the fitted model.
+
+Estimands and performance
+The primary estimands are the 36 structural differences J_1 - J_0.
+Report root mean squared error across these differences for each replicate,
+the signed-sum error, mean absolute error on unchanged pairs, and recovery
+of changed pairs. For changed pairs, orient estimates by the sign of the true
+change before averaging, with target 0.30.
+Also retain every edge estimate to report edge-specific Monte Carlo bias
+and root mean squared error. Average performance and Monte Carlo standard
+errors are computed across replicates. Paired differences compare methods
+on the same simulated data. No hypothesis-test rejection rate is interpreted
+as a causal false-positive rate.
+
+Numerical checks and failures
+Validate the optimized nodewise fitter against R glm and exact state
+probabilities against their nodewise logistic conditionals. Check convergence,
+finite estimates, and score residuals. Keep a record of every failure and
+report denominators. Never replace failed estimates by zero.
+
+Scope
+The design isolates measurement error under a single, linear, exogenous
+contextual cause. It does not address omitted additional causes, endogenous
+covariates, nonlinearity, item measurement noninvariance, or data-dependent
+group formation. It does not establish performance of exact-likelihood model
+selection, the Network Comparison Test, or causal interaction tests.
+The design record is local and was not publicly preregistered.
+
+Numerical amendment after the first full execution
+The initial convergence criterion accepted some large iterates in separated
+logistic regressions. Before interpreting results, a zero-cell separation
+screen was added. Remaining fits with any coefficient above 8 in absolute
+value receive a linear-programming separation check. A large coefficient alone
+is not a reason for exclusion. Known separated and nonseparated fixtures
+validate the checks. The original scenario grid, seeds, sample sizes, and
+replication count remain unchanged. All methods are summarized on the same
+set of successful datasets within a scenario and sample size. Failure counts
+are reported separately, so recovery summaries are conditional on estimability.
