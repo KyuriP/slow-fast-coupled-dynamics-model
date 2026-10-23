@@ -1,36 +1,11 @@
-# ============================================================
-# R/revision_2026/figures/theme_publication.R
-# ============================================================
-# Shared theme + palette for the four publication figures. Every
-# fig*_publication.R script in this folder should source this file and
-# use theme_pub() rather than theme_classic()/defaults directly, so the
-# four figures read as one coherent set instead of four one-off plots.
-#
-# Modeled on the styling from the old Figure 7 (R/scripts/13_network_full_check.R's
-# theme_pub(): panel letters, bottom legend, log-scale axis, minimal
-# gridlines) -- reproduced/extended here rather than sourcing that script
-# directly, since it's a protected legacy script tied to the pre-revision
-# manuscript.
-#
-# qgraph figures (the network-trio panels) are base-R graphics, not
-# ggplot, so this theme doesn't apply to them directly. Their styling
-# recipe (spring layout fixed from the true network, posCol/negCol,
-# edge.width, vsize, label.cex, theme="classic") is documented inline in
-# fig4_network_trio.R instead, matching the old Figure 8 recipe.
-# ============================================================
+# Shared sizes and colours for the simulation and empirical figures.
+# The qgraph network panels use base graphics and set their own layout.
 
 suppressPackageStartupMessages({
   library(ggplot2)
 })
 
-# ------------------------------------------------------------------------
-# Global style tokens, locked 2026-08-25 final figure-design pass. Every
-# fig*.R script should reference these rather than hardcoding its own
-# sizes/widths/alphas, so the whole set reads as one consistent
-# journal-style figure family. Individual panels may still deviate
-# slightly (e.g. a smaller point size for a dense panel) but should start
-# from these values.
-# ------------------------------------------------------------------------
+# Default sizes for the figure scripts. Individual panels may override them.
 base_size_panel_title <- 10.5
 base_size_axis_title  <- 10
 base_size_axis_text   <- 9
@@ -72,12 +47,7 @@ panel_title <- function(letter, text) {
   bquote(bold(.(paste0("(", letter, ") "))) * .(text))
 }
 
-# ------------------------------------------------------------------------
-# Palette -- locked, one set of colors reused across all four figures so
-# the paper reads as one visual identity. Restrained (no rainbow/viridis-
-# per-figure); each color is tied to one recurring quantity across the
-# whole simulation set.
-# ------------------------------------------------------------------------
+# Use consistent colours for recurring quantities across the figures.
 col_P        <- "#3B76AF"   # slow context / P_t
 col_M        <- "#D97A2B"   # symptom burden / M_t or m_t
 col_low      <- "#4C9A6A"   # low-context condition (muted green)
@@ -105,11 +75,7 @@ pal_arm      <- c(baseline = col_off, naive = col_naive, adjusted = col_adjusted
 qgraph_pos_col <- "#1565C0"
 qgraph_neg_col <- "#C62828"
 
-# ------------------------------------------------------------------------
-# Empirical application (HELIUS) -- generating mechanisms. Same color for a
-# mechanism in both empirical figures; reuses the colors above where the
-# meaning matches (null = reference grey, context = adjusted green).
-# ------------------------------------------------------------------------
+# Use the same mechanism colours in both HELIUS figures.
 pal_mechanism <- c(
   "Null"               = col_off,
   "Fixed field"        = "#C9A13B",

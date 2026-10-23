@@ -1,5 +1,6 @@
-# Run from repository root with Rscript. Optional arguments are repetitions
-# and worker count. The paper uses 500 repetitions and four workers.
+# Simulation 5. Run from the repository root.
+# Arguments are repetitions, workers, and optional R backend.
+# Manuscript settings are 500 repetitions and four workers.
 suppressPackageStartupMessages({
   library(Rcpp)
   library(parallel)
@@ -63,8 +64,8 @@ has_separation <- function(X,y) {
 }
 sim5_fit <- function(Y,W,adjust) {
   ans <- sim5_fit_cpp(Y,W,adjust)
-  # Extremely large finite iterates require an additional geometric check.
-  # This check does not discard an estimate merely because it is large.
+  # Check for separation when coefficients exceed 8.
+  # Large finite estimates are retained if no separating direction is found.
   if (ans$ok && ans$max_coefficient > 8) {
     for (i in seq_len(ncol(Y))) {
       X <- cbind(1,Y[,-i,drop=FALSE])
@@ -203,7 +204,7 @@ run_one <- function(k) {
 started <- Sys.time()
 cat("Design",nrow(design),"datasets and",length(methods),"methods\n")
 all_results <- vector("list",nrow(design))
-# Chunks make progress visible. Results are written after all chunks finish.
+# Process 120 datasets at a time and save after the final batch.
 chunks <- split(seq_len(nrow(design)),ceiling(seq_len(nrow(design))/120))
 for (a in seq_along(chunks)) {
   ids <- chunks[[a]]

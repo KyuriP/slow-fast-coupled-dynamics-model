@@ -1,35 +1,7 @@
-# ============================================================
-# R/revision_2026/figures/fig2_context_baseline.R
-# ============================================================
-# Figure 2: same symptom-symptom coupling, different slow context,
-# different symptom burden.
-#
-# Rebuilt as a two-panel figure. The old 3-panel version (schematic + PMF
-# + summary) tried to do too many jobs at once and read as an "analysis
-# report panel" rather than one clean visual claim. The fixed network is
-# now stated in the caption/Methods instead of drawn as a schematic -- a
-# placeholder 7-node cartoon risked implying the wrong N anyway, so
-# dropping it removes both the clutter and that accuracy risk.
-#
-#   (A) Burden distributions, wider, no legend -- lines labeled directly
-#       at their right end (Low / Middle / High context).
-#   (B) Compact summary by context, narrower and tighter than the
-#       previous version (labels were drifting too far from the points).
-#
-# Column-name notes (this repo's actual structure):
-#   - sim1_raw.rds is a LIST (burden / symptom_activation / params /
-#     design), not a flat data frame -- the burden table is at $burden.
-#   - burden columns are: condition, P, chain, sweep, M, m (m = M/N).
-#   - There's no valid precomputed SE in sim1_summary.csv (sd_M there is
-#     sweep-level, and sequential Gibbs sweeps within a chain are
-#     autocorrelated, so treating all 200 chains x 200 sweeps as
-#     independent understates the true SE). Panel B recomputes SE
-#     properly from per-chain means (200 independent chains).
-#
-# Outputs
-# -------
-#   figs/revision_2026/Figure2_context_baseline.pdf / .png
-# ============================================================
+# Simulation 1 figure. Compare symptom activation at three fixed context levels.
+# Panel A shows symptom-count distributions. Panel B shows means and the
+# proportion of states with at least five active symptoms.
+# Read the saved Simulation 1 results and write Figure2_context_baseline.pdf/.png.
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -59,18 +31,8 @@ burden_show <- burden |>
 # used in the data).
 pal_context_display <- setNames(pal_context, condition_labels[names(pal_context)])
 
-# ------------------------------------------------------------------------
-# 2. Panel A: burden distributions (probability-mass line/point plot --
-#    M is a discrete 0-9 count, not continuous, so this is a PMF plot, not
-#    a density). No legend -- each line is labeled directly.
-#
-#    Labels sit at each curve's own PEAK rather than a shared x position
-#    (e.g. the right end, M=9): all three distributions converge to ~0% by
-#    M=9, so a right-edge label collided all three text strings together.
-#    The peaks (low~1, middle~2, high~3-4) are naturally well separated
-#    vertically, so labeling there is both readable and a more informative
-#    anchor than the flat right tail.
-# ------------------------------------------------------------------------
+# Panel A. Symptom count is discrete, so plot its probability mass function.
+# Average within each chain before summarizing across chains.
 prop_tbl <- burden_show |>
   count(P_group, M, name = "n") |>
   group_by(P_group) |>
@@ -118,12 +80,8 @@ pA <- ggplot(prop_tbl, aes(x = M, y = prop, colour = P_group, group = P_group)) 
     plot.title = element_text(size = 12)
   )
 
-# ------------------------------------------------------------------------
-# 3. Panel B: compact summary contrast. Mean burden as point + 95%
-#    interval (per-chain SE, not sweep-level), high-burden probability as
-#    a short text label. Tightened relative to the earlier version so it
-#    reads as one compact strip instead of a row of scattered text.
-# ------------------------------------------------------------------------
+# Panel B. Show mean activation and the proportion with at least five symptoms.
+# Intervals use variation across independent chains.
 chain_summary <- burden_show |>
   group_by(condition, P, P_group, chain) |>
   summarise(
@@ -153,15 +111,7 @@ summ_corrected <- chain_summary |>
     high_label = sprintf("%.0f%%", 100 * pr_high)
   )
 
-# Label placement is data-driven rather than fixed: a fixed x-position
-# tried earlier clipped label text mid-word on every row and, on High
-# context, collided with the mean-value text -- scale_x_continuous(limits=...)
-# hard-clips anything past the edge, so a too-narrow guess doesn't just
-# look cramped, it silently truncates the label. label_x now sits a fixed
-# gap past the widest mean_label (so it can't collide with any mean_M
-# value), and x_axis_max leaves room for the longest label text
-# ("≥5 active: 100%"). Check the rendered PNG after rerunning if it clips
-# again; widen the multiplier rather than shrinking the text.
+# Position labels relative to each estimate and interval to avoid overlap.
 label_x <- max(summ_corrected$mean_M) + 0.95
 x_axis_max <- label_x + 2.3
 sep_x   <- max(summ_corrected$mean_M) + 0.82   # light divider between the

@@ -1,36 +1,9 @@
-# ============================================================
-# R/revision_2026/04b_sim_network_estimation_replicated.R
-# ============================================================
-# Replicated version of Simulation 4 (see 04_sim_network_estimation.R for
-# the single-run pilot that established n_person=10000 was needed for a
-# clean naive/adjusted/baseline separation). This is the version to lock
-# for the manuscript: n_reps independent replicates of the same design, so
-# we can report mean +/- SE across replicates instead of one run, and check
-# that naive - adjusted is consistently positive, not just positive once.
-#
-# Same design as 04_sim_network_estimation.R, same true network (tau/omega/
-# gamma from 00_parameters_uncentered01.R, unchanged across replicates --
-# only the person-level randomness, i.e. initial states, sweep updates, and
-# P_i draws, differs by replicate). Per replicate:
-#   baseline -- n_person people at fixed P=0 (no confounding possible)
-#   naive    -- n_person people at P_i ~ Uniform(P_range), estimator omits P
-#   adjusted -- identical data to naive, estimator conditions on P_i
-#
-# n_person per replicate matches the single-run pilot (10000, see note
-# below) -- n_reps=30 replicates of that same size is what turns the
-# pilot's single naive-vs-adjusted gap into a mean +/- SE across
-# independent replicates.
-#
-# Outputs
-# -------
-#   res/revision_2026/sim4/sim4_replicated_by_arm.csv        (rep x arm)
-#   res/revision_2026/sim4/sim4_replicated_summary_by_arm.csv (mean +/- SE by arm)
-#   res/revision_2026/sim4/sim4_replicated_naive_minus_adjusted.csv (rep-level paired diff)
-#   res/revision_2026/sim4/sim4_replicated_summary_diff.csv  (mean +/- SE of the
-#     paired diff, plus % of replicates where naive > adjusted)
-#   figs/revision_2026/fig_sim4_replicated_diff.pdf          (per-replicate
-#     naive-adjusted gap, global strength and mae_true_zero)
-# ============================================================
+# Simulation 4 with 30 independent replicates.
+# Uses the design and n = 10,000 from 04_sim_network_estimation.R.
+# The generating parameters stay fixed across replicates.
+# Each replicate fits a fixed-context sample and a varying-context sample.
+# The latter is fitted both with and without context adjustment.
+# Save arm summaries and paired differences in res/revision_2026/sim4.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -43,18 +16,13 @@ source("R/revision_2026/utils_uncentered01_model.R")   # simulate_fast_sweep(), 
 source("R/revision_2026/00_parameters_uncentered01.R")  # tau (+1.3 shift), omega, gamma, symptoms, N
 
 # ------------------------------------------------------------------------
-# Design -- PILOT VALUES
+# Simulation settings
 # ------------------------------------------------------------------------
 T_burn   <- 200L
 n_reps   <- 30L
 n_person <- 10000L   # per arm, per replicate; matches the sample size
-                     # established in the single-run pilot
-                     # (04_sim_network_estimation.R) to keep nodewise
-                     # estimates stable. Averaging across n_reps=30
-                     # replicates on top of that is what shrinks the SE of
-                     # the mean naive-adjusted gap, not a smaller
-                     # per-replicate n. If replicate-level SEs below come
-                     # out too wide, raise n_reps first.
+                     # The initial sample-size check motivated n = 10,000 per arm.
+                     # The 30 replicates quantify Monte Carlo variability at that fixed sample size.
 
 P_fixed <- 0
 P_range <- c(-0.6, 0.6)

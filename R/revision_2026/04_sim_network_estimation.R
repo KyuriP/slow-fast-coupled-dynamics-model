@@ -1,57 +1,9 @@
-# ============================================================
-# R/revision_2026/04_sim_network_estimation.R
-# ============================================================
-# Simulation 4: does pooling cross-sectional data across different context
-# (P) levels, without conditioning on P, make the ESTIMATED symptom
-# network look more strongly coupled than the TRUE generative network,
-# purely because every symptom shares the same confounder (each moves with
-# P via its own gamma_i)? This is the paper's central claim made concrete
-# and testable: "when context looks like coupling."
-#
-# Unlike Sims 1-3, this is a cross-sectional (between-person) design, not a
-# trajectory. Each of n_person independent "people" is simulated forward
-# from a random start for T_burn sweeps at their own P_i, and only their
-# FINAL state is kept as their one observed symptom profile -- analogous to
-# a single-timepoint self-report survey, not a repeated-measures chain.
-#
-# Same fast layer, same tau/omega/gamma/N=9 as Simulations 1-3 (validated,
-# +1.3 tau shift). The TRUE network is `omega` from 00_parameters_uncentered01.R.
-#
-# Three arms, same n_person and T_burn throughout so only the design
-# differs between them:
-#   baseline -- single context: everyone simulated at the same fixed P=0
-#               (Sim 1's middle condition). No context variance, so no
-#               confounding is possible by construction. Isolates ordinary
-#               finite-sample estimation error as a reference point for
-#               what the naive/adjusted arms should be compared against.
-#   naive    -- pooled, no adjustment: each person has their own P_i drawn
-#               from Uniform(-0.6, 0.6) (Sim 1's low/high range), but the
-#               estimator (fit_edges with Pvec=NULL) doesn't use P_i at
-#               all -- as if the analyst pooled data across contexts
-#               without having measured or modeled them.
-#   adjusted -- pooled, context-adjusted: identical data to "naive" (same
-#               P_i draws, same seed), but fit_edges is given Pvec so each
-#               nodewise regression conditions on P_i.
-#
-# Prediction: naive should show inflated apparent connectivity (truly-zero
-# edges coming out nonzero, true edges over- or under-estimated) relative
-# to both baseline and adjusted; adjusted should look close to baseline,
-# showing the inflation in "naive" is a confounding artifact of pooling
-# over unmodeled context, not an artifact of the regression itself.
-#
-# n_person, T_burn, and the P_i spread are PILOT VALUES -- calibrate
-# against output, same as Sim 1's tau shift and Sim 3's b grid.
-#
-# Outputs
-# -------
-#   res/revision_2026/sim4/sim4_edge_estimates.csv   (one row per symptom
-#     pair x arm: true omega, estimated omega)
-#   res/revision_2026/sim4/sim4_summary.csv          (MAE, global strength
-#     per arm)
-#   figs/revision_2026/fig_sim4_network_estimation.pdf (estimated vs true
-#     edge weight, faceted by arm, coloured by whether the true edge is
-#     zero or nonzero)
-# ============================================================
+# Simulation 4. Network estimation with fixed or varying context.
+# Each person contributes the final symptom profile after 200 fast sweeps.
+# The baseline arm fixes P at zero. The other arms use the same profiles
+# with P drawn uniformly from -0.6 to 0.6 and either omit or adjust for P.
+# The generating network is omega in 00_parameters_uncentered01.R.
+# Results are saved in res/revision_2026/sim4.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -64,21 +16,12 @@ source("R/revision_2026/utils_uncentered01_model.R")   # simulate_fast_sweep(), 
 source("R/revision_2026/00_parameters_uncentered01.R")  # tau (+1.3 shift), omega, gamma, symptoms, N
 
 # ------------------------------------------------------------------------
-# Design -- PILOT VALUES
+# Simulation settings
 # ------------------------------------------------------------------------
-T_burn    <- 200L    # same validated burn-in as Sim 1 (one fast sweep per
-                      # step; each person's chain starts from a random state)
-n_person  <- 10000L   # raised from 2000: at 2000, unregularized nodewise
-                      # logistic regression (no L1/EBIC shrinkage, several
-                      # low-base-rate symptoms like suicidal ~7.5%) had a
-                      # high noise floor -- even the baseline arm (P fixed,
-                      # zero confounding possible) showed global strength
-                      # 6.50 vs true 3.05, almost as inflated as naive's
-                      # 7.01, burying the naive-vs-adjusted confounding
-                      # signal under generic estimation noise. 10000 people
-                      # is cheap here (each person is just T_burn sweeps,
-                      # no trajectory) and runs in parallel below, so raise
-                      # n rather than add regularization for now.
+# The initial n = 2,000 run had substantial estimation error even at fixed P.
+# This run uses n = 10,000 with the same unregularized estimator.
+T_burn    <- 200L
+n_person  <- 10000L
 
 P_fixed    <- 0          # baseline arm: everyone simulated at this P
 P_range    <- c(-0.6, 0.6)  # naive/adjusted arms: P_i ~ Uniform(P_range),
@@ -101,11 +44,8 @@ simulate_person <- function(P) {
 }
 
 # ------------------------------------------------------------------------
-# Generate one arm's data (n_person independent people), in parallel.
-# Returns S (n_person x N matrix) and Pvec (n_person, the true P_i used --
-# kept even for the "naive" arm since we need it to know what confounding
-# was present, just not passed to the naive estimator).
-# ------------------------------------------------------------------------
+# Generate independent profiles and retain each person's true P.
+# The unadjusted estimator does not receive P.
 n_cores <- max(1, parallel::detectCores(logical = TRUE) - 1, na.rm = TRUE)
 cat(sprintf("Using %d cores.\n", n_cores))
 RNGkind("L'Ecuyer-CMRG")

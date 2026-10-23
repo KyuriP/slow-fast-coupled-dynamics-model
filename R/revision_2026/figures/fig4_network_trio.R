@@ -1,43 +1,9 @@
-# ============================================================
-# R/revision_2026/figures/fig4_network_trio.R
-# ============================================================
-# The "context looks like coupling" figure -- true / symptom-only /
-# context-adjusted network diagrams side by side. Figure 4's network-trio
-# panel, styled to match the old Figure 8 exactly: same spring layout
-# (fixed from the true network) reused across all panels so edge
-# differences are visually comparable, same qgraph recipe (posCol/negCol,
-# edge.width, vsize, label.cex, classic theme). Reproduced from
-# R/scripts/14_network_full_check_graphs.R's plotting recipe rather than
-# sourcing that script, since it's a protected legacy script tied to the
-# pre-revision manuscript and uses a different (N=12, exogenous SD_P)
-# design entirely.
-#
-# Data: res/revision_2026/sim4/sim4_raw.rds, from the single-run pilot
-# (04_sim_network_estimation.R, n_person=10000), not the replicated
-# version (04b). This mirrors how the old Figure 8 also used one
-# representative estimate (averaged over 20 replicates there, a single
-# n=10000 draw here) rather than the 30 x n=3000 replicated design used
-# for the quantitative claim in Figure 4's summary panels. The replicated
-# run (04b) only saved summary metrics, not full edge matrices, so it
-# can't drive this figure directly -- if a replicate-averaged version is
-# wanted, 04b would need to additionally accumulate and average omega_hat
-# matrices across replicates the way 14 did.
-#
-# 2026-08-27: expanded from three network panels (true / naive / adjusted)
-# to four (true / baseline / naive / adjusted) -- the Results text already
-# discusses the fixed-context baseline arm's summary metrics, but readers
-# had no way to see what that arm's estimated network actually looks like,
-# only infer it from the global-strength/deviation numbers. Showing all
-# three estimated networks side by side (fixed P, P omitted, P included)
-# makes that comparison fully visible instead of leaving the fixed-P
-# condition as text-only. Panel lettering shifted accordingly: A=true,
-# B=baseline (fixed P=0), C=naive (P omitted), D=adjusted (P included).
-# Metric-strip panels in fig4_metric_strip.R relettered E/F to match.
-#
-# Outputs
-# -------
-#   figs/revision_2026/Figure4_network_trio.pdf / .png
-# ============================================================
+# Simulation 4 network panels for main Figure 5.
+# Show the true network, fixed-context estimate, unadjusted estimate and
+# context-adjusted estimate with the same node layout.
+# Use the single-run example from sim4_raw.rds, with 10,000 participants per arm.
+# The metric panels use a separate set of 30 replicates, also with 10,000 per arm.
+# Write Figure4_network_trio.pdf/.png. The filename retains its original numbering.
 
 suppressPackageStartupMessages({
   library(qgraph)
@@ -53,14 +19,8 @@ W_baseline <- raw$omega_hat$baseline
 W_naive <- raw$omega_hat$naive
 W_adjusted <- raw$omega_hat$adjusted
 
-# ------------------------------------------------------------------------
-# Plotting threshold: hide edges below this magnitude so the naive panel
-# isn't cluttered with near-zero sampling noise. Matches the old Figure
-# 8's convention. True edges here are Uniform(0.20, 0.45), so plot_min=0.15
-# keeps every real edge while suppressing most confounding-driven noise.
-# Applied only to the two ESTIMATED matrices, never W_true -- W_true has
-# no noise to threshold, every non-edge is exactly 0 by construction.
-# ------------------------------------------------------------------------
+# Hide estimated edges with absolute weight below 0.15 in all three estimates.
+# All nonzero generating edges exceed this threshold.
 plot_min <- 0.15
 zero_small <- function(W) { W[abs(W) < plot_min] <- 0; W }
 
@@ -79,11 +39,7 @@ max_edge <- max(sapply(mats, function(m) max(abs(m))))
 # panel, so a reader can track a given symptom pair across panels.
 L <- qgraph(W_true_plot, layout = "spring", DoNotPlot = TRUE)$layout
 
-# PHQ-9-style abbreviations, keyed by symptom NAME (not position) so this
-# stays correct even if `symptoms` is ever reordered upstream. Replaces
-# the earlier auto-generated 4-char truncation (ANHE/DEPR/SLEE/ENER/
-# APPE/GUIL/CONC/PSYC/SUIC), which read as slightly awkward -- these are
-# closer to standard, PHQ-9-recognizable abbreviations.
+# Match symptom abbreviations by name so ordering can change.
 phq_abbrev <- c(
   anhedonia     = "ANH",
   depressed     = "DEP",
@@ -99,22 +55,8 @@ short_labels <- unname(phq_abbrev[symptoms])
 stopifnot(!anyNA(short_labels))  # catch silently if `symptoms` ever changes
 
 # ------------------------------------------------------------------------
-# Spurious-edge highlighting: the main content addition of this design
-# pass. Previously every edge in every panel was the same blue (posCol),
-# so the reader had to compare panels side by side to notice that the
-# symptom-only (P omitted) panel fabricates extra coupling. Now: edges
-# real in the true network stay blue; edges that appear in an ESTIMATED
-# panel but don't exist in the true network (estimated couplings on
-# true-zero pairs exceeding the plotting threshold) are drawn in orange,
-# the same colour already used for the naive/symptom-only estimator
-# elsewhere in this figure set (col_naive from theme_publication.R), so
-# the colour carries the "this is what naive estimation gets wrong"
-# meaning across the whole figure, not just this one panel. Genuine
-# negative edges keep the locked negCol, matching qgraph's normal
-# sign-based coloring. Applied to both estimated panels (naive and
-# adjusted) with the same rule -- the adjusted panel should show few or
-# no such edges, and seeing that directly is the point.
-# ------------------------------------------------------------------------
+# Highlight estimated edges above the plotting threshold when the
+# corresponding generating edge is below it. Use the same rule in all panels.
 spurious_col <- col_naive
 
 build_edge_colors <- function(W_est, W_true_ref) {
@@ -129,39 +71,17 @@ edge_col_baseline <- build_edge_colors(W_baseline_plot, W_true_plot)
 edge_col_naive    <- build_edge_colors(W_naive_plot, W_true_plot)
 edge_col_adjusted <- build_edge_colors(W_adjusted_plot, W_true_plot)
 
-# Panel titles, node labels, and margins tightened per the design-pass
-# review: smaller margins and a smaller export canvas (12x4.3in ->
-# 8.8x2.9in) remove the excess white space around the trio, larger
-# relative node size (vsize) fills the freed-up room.
-#
-# vsize raised 9.5 -> 13 and label.cex/title.cex nudged up slightly
-# (0.95->1.05, 1.0->1.08) -- nodes/labels were hard to read at the
-# original size once the figure was scaled down to \textwidth in the
-# compiled PDF. title.cex bumped again to stay visually consistent with
-# the larger panel-D/E titles in fig4_metric_strip.R once that script's
-# own titles were enlarged to compensate for its narrower placement.
+# Size labels and nodes for the final two-by-two layout.
 plot_one <- function(W, title, edge_color_mat = NULL) {
-  # qgraph()'s first formal argument is literally named `input`, not `x` --
-  # naming this list element "x" meant do.call() couldn't match it to
-  # anything, `input` stayed unfilled, and qgraph errored on its own
-  # required argument. Renamed to match qgraph's actual signature.
+  # Pass the network matrix through qgraph's input argument.
   args <- list(
     input = W, layout = L, maximum = max_edge, fade = TRUE,
     labels = short_labels,
-    # title.cex bumped twice (1.3 -> 1.7 total) -- the "(A)"/"(B)"/"(C)"/
-    # "(D)" panel-letter titles kept reading too small. label.cex (node
-    # labels: ANH/DEP/etc.) left at 1.3, only the panel titles needed the
-    # further increase.
+    # Set panel-title size separately from symptom-label size.
     edge.width = 1.3, vsize = 12, label.cex = 1.3,
     title = title, title.cex = 1.7,
     theme = "classic", DoNotPlot = FALSE,
-    # Margins widened (was c(1,1,2,1)) to compensate for the larger
-    # vsize: the fixed spring layout's node positions were computed back
-    # when vsize=9.5, so peripheral nodes (APP at top, SLP on the right)
-    # sat close to the plot boundary already -- bigger circles at the
-    # same positions with the same margin pushed past the edge, most
-    # visibly in panel C. More margin pulls the drawn region inward
-    # without moving/shrinking the nodes themselves.
+    # Leave enough margin around peripheral nodes.
     mar = c(2, 2.2, 3.2, 2.2)
   )
   if (is.null(edge_color_mat)) {
@@ -173,23 +93,13 @@ plot_one <- function(W, title, edge_color_mat = NULL) {
   do.call(qgraph, args)
 }
 
-# The 3-colour edge-legend row was dropped as redundant with the caption,
-# but the PHQ-9 abbreviation key was explicitly requested back -- it's
-# genuinely useful in-figure (readers shouldn't have to hold ANH/DEP/SLP/...
-# in their head or flip to the caption). Kept as a single slim text line,
-# not a full legend() row.
+# Include the symptom abbreviation key below the network panels.
 abbrev_key <- paste(sprintf("%s = %s", phq_abbrev, names(phq_abbrev)), collapse = ", ")
 
 draw_abbrev_strip <- function() {
   par(mar = c(0, 0, 0, 0))
   plot.new()
-  # At a fixed cex=1.0, the full abbreviation string is wider than the
-  # plotting device, so text() (centered by default, adj=0.5) silently
-  # clips characters off both ends -- this is what made "ANH = anhedonia"
-  # render as "NH = anhedonia" (leading "A" clipped). Not a wrong
-  # abbreviation, just overflow. Auto-shrink cex with strwidth() until the
-  # string actually fits the device width, so this can't silently clip
-  # again regardless of the final export size.
+  # Reduce the key's text size if it exceeds the available width.
   cex_fit <- 1.0
   while (strwidth(abbrev_key, cex = cex_fit) > 0.96 && cex_fit > 0.4) {
     cex_fit <- cex_fit - 0.02
@@ -197,20 +107,8 @@ draw_abbrev_strip <- function() {
   text(0.5, 0.5, abbrev_key, cex = cex_fit, col = "grey30")
 }
 
-# Switched from a single row of 4 panels to a 2x2 grid + strip row. The
-# 1x4 version (12.3in wide x 3.42in tall, ~3.6:1 aspect ratio) worked but
-# was flatter/wider than ideal -- each panel had less room than in the
-# original 3-panel version, and the whole figure would print small once
-# scaled to \textwidth. 2x2 gives each panel roughly the same per-panel
-# footprint as the original 3-panel row (no vsize/label.cex/title.cex
-# recalibration needed) while also fixing the aspect-ratio problem.
-#
-# Panel arrangement is deliberately not simple reading order (A,B / C,D
-# would put True+Baseline on top, Omitted+Included on bottom) -- chosen so
-# the core "P omitted vs. P included" comparison sits side by side in one
-# row (bottom), since that's the comparison a reader most needs to eyeball
-# directly. True and the fixed-P (no-confounding) reference sit above as
-# the two reference points the bottom row is compared against.
+# Place the true and fixed-context networks above the unadjusted and adjusted
+# networks, so the two estimates from varying context can be compared side by side.
 draw_trio <- function() {
   layout(matrix(c(1, 2, 3, 4, 5, 5), nrow = 3, byrow = TRUE), heights = c(3.1, 3.1, 0.34))
   plot_one(W_true_plot, "(A) True coupling")
@@ -222,12 +120,7 @@ draw_trio <- function() {
 
 dir.create("figs/revision_2026", recursive = TRUE, showWarnings = FALSE)
 
-# Near-square canvas for the 2x2 grid + strip: each of the 2 columns gets
-# ~3.6in width, each of the 2 main rows ~3.4in height -- close to the
-# original 3-panel row's per-panel footprint (was 9.2/3=3.07in wide x
-# 3.1in tall), so the existing vsize=12/label.cex=1.05/title.cex=1.08
-# calibration should still read correctly. Check the rendered PDF/PNG
-# regardless before trusting this.
+# Use a near-square canvas for the network panels and abbreviation key.
 pdf("figs/revision_2026/Figure4_network_trio.pdf", width = 7.4, height = 7.5)
 draw_trio()
 dev.off()

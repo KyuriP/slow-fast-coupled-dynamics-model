@@ -1,29 +1,8 @@
-# ============================================================
-# R/revision_2026/02_sim_stress_recovery.R
-# ============================================================
-# Simulation 2: introduce P_t dynamics (mean reversion + diffusion + a
-# single acute shock). Feedback is OFF (b=0) -- shows stress and recovery
-# cleanly before Simulation 3 adds symptom-to-context feedback.
-#
-# Model (per Step 7):
-#   P_{t+dt} = P_t + kappa*(P_base - P_t)*dt + sigma_P*sqrt(dt)*eps_t
-#              + shock_t + b*(m_smooth - m_star)*dt      [b = 0 here]
-#
-# Fast layer unchanged from Simulation 1:
-#   logit Pr(S_i=1 | S_-i, P_t) = tau_i + sum_j!=i omega_ij S_j + gamma_i P_t
-#
-# At the shock step, the perturbation is applied first, then symptoms
-# update conditional on the perturbed P_t, then P_t recovers toward
-# baseline for the next step. Burn-in (200 steps, same as the validated
-# Sim 1 burn-in) lets the fast layer mix before the shock hits; P_base=0
-# so there's no separate slow-state burn-in needed.
-#
-# Outputs
-# -------
-#   res/revision_2026/sim2/sim2_raw.rds
-#   res/revision_2026/sim2/sim2_summary.csv
-#   figs/revision_2026/fig_sim2_stress_recovery.pdf
-# ============================================================
+# Simulation 2. Recovery after a single contextual perturbation, with feedback off.
+# P changes through mean reversion and diffusion. Symptom parameters are fixed.
+# Apply the perturbation before updating symptoms, then update P for the next step.
+# The first 200 steps precede the perturbation.
+# Outputs are saved under res/revision_2026/sim2.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -132,11 +111,7 @@ cat("\nCompare pre-shock baseline vs. end-of-window: if end-of-window mean_P and
 cat("mean_M are close to pre-shock baseline, recovery is essentially complete by\n")
 cat("the end of the simulated window. If not, extend post_shock_steps.\n")
 
-# ------------------------------------------------------------------------
-# Figure: stacked P_t / M_t trajectory around the shock (matches the
-# upper-P/lower-symptom-trace convention used in the original manuscript's
-# Figure 3)
-# ------------------------------------------------------------------------
+# Plot context and symptom activation relative to perturbation onset.
 plot_window <- summary_tbl |> filter(time_since_shock >= -100, time_since_shock <= post_shock_steps)
 
 pP <- ggplot(plot_window, aes(time_since_shock, mean_P)) +

@@ -34,7 +34,7 @@ pairs <- lapply(setdiff(unique(dat$method),"omit"),function(m) {
   summarise(across(all_of(metrics),list(mean=avg,mcse=se)),.groups="drop")
 write.csv(pairs,file.path(root,"paired_vs_omit.csv"),row.names=FALSE)
 
-# Independent reconstruction of all primary metrics from saved edge estimates.
+# Check RMSE and signed sums against the saved edge estimates.
 saved <- readRDS(file.path(root,"edge_estimates.rds"))
 edge_rows <- vector("list",nrow(saved$design))
 for (k in seq_len(nrow(saved$design))) {

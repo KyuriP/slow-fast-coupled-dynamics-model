@@ -1,53 +1,14 @@
-# ============================================================
-# R/revision_2026/03_sim_feedback.R
-# ============================================================
-# Simulation 3 (MAIN TEXT): same shock/recovery design as Sim 2, but with
-# symptom-to-context feedback on. Compares b=0 (Sim 2's baseline) against
-# b=0.5. Everything else -- fast layer, shock timing/magnitude, kappa,
-# sigma_P, dt -- is identical to Sim 2, so this isolates the feedback effect.
+# Simulation 3. Compare recovery with feedback off and with b = 0.5.
+# The symptom model, perturbation and contextual recovery parameters match Simulation 2.
+# The exploratory grid 0.3, 0.5 and 0.7 informed the choice of b = 0.5.
+# This value gave a visible recovery delay while activation still declined.
 #
-# b=0.5 came out of a pilot grid (0.3/0.5/0.7, see
-# 03b_sim_feedback_grid_supplement.R): 0.3 was too subtle in symptom burden
-# (2.58 off vs 2.71 on), 0.7 gave the biggest separation but starts to read
-# as tipping-like even though it's still decaying. 0.5 is the middle
-# ground -- visible delay in both P and burden, still clearly recovering.
-#
-# Model:
-#   P_{t+dt} = P_t + kappa*(P_base - P_t)*dt + sigma_P*sqrt(dt)*eps_t
-#              + b*(m_smooth_t - m_star)*dt
-#   (shock = one-off jump to P at shock_time, same as Sim 2)
-#
-# 2026-08-27: switched the feedback term from the positive-part clamp
-# [m_smooth_t - m_star]_+ to the signed difference. Now elevated burden
-# pushes P up and low burden pulls P down too (on top of kappa's mean
-# reversion). Describe this in the manuscript as signed feedback
-# b*(m_bar_t - m_star), not the old clamped version.
-#
-# Fast layer unchanged:
-#   logit Pr(S_i=1 | S_-i, P_t) = tau_i + sum_j!=i omega_ij S_j + gamma_i P_t
-#
-# m_smooth_t is an EMA of the single-sweep symptom fraction m_t = M_t/N.
-# Needed because m_t from one sweep alone is noisy (same reason Sim 1
-# averages 200 sweeps instead of reading one off) -- EMA is the cheap way
-# to get a low-noise, causally-laggable signal without storing a window.
-#
-# m_star = the P=0 equilibrium mean_m from Sim 1's middle condition
-# (0.2766389, res/revision_2026/sim1/sim1_summary.csv). Starting m_smooth
-# there means the system is already at its own b=0 fixed point, so no
-# extra burn-in is needed for the feedback case.
-#
-# b and alpha_smooth are pilot values, same calibration status as Sim 1's
-# tau shift. b is picked to be clearly visible against b=0 (end-of-window
-# mean_P/mean_M further from pre-shock baseline) without running away or
-# settling into a second stable state -- bistability/hysteresis isn't the
-# point here, it's deliberately avoided, not something this sim tests for.
-#
-# Outputs
-# -------
-#   res/revision_2026/sim3/sim3_raw.rds
-#   res/revision_2026/sim3/sim3_summary.csv
-#   figs/revision_2026/fig_sim3_feedback_comparison.pdf
-# ============================================================
+# Feedback uses the signed difference b * (m_smooth - m_star), replacing
+# an earlier positive-part formulation on 2026-08-27.
+# m_smooth is an exponentially weighted mean of the active-symptom fraction.
+# m_star is the Simulation 1 middle-context mean, 0.2766389, and also supplies
+# its initial value. These choices are illustrative rather than empirically fitted.
+# Outputs are saved under res/revision_2026/sim3.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -80,7 +41,7 @@ n_chains    <- 1000L   # raised from 200: at 200 chains the b=0.3 peak (first
                         # the locked chain count for the main-text comparison.
 
 # ------------------------------------------------------------------------
-# Feedback-specific parameters -- PILOT VALUES, calibrate against output
+# Feedback parameters used in the manuscript
 # ------------------------------------------------------------------------
 m_star       <- 0.2766389   # Sim 1 middle-condition (P=0) equilibrium mean_m
 alpha_smooth <- 0.05        # EMA rate; half-life = ln(2)/alpha_smooth steps
@@ -88,7 +49,7 @@ alpha_smooth <- 0.05        # EMA rate; half-life = ln(2)/alpha_smooth steps
                              # fast enough to track the post-shock rise/decay,
                              # slow enough to average out single-sweep noise.
 
-b_values <- c(off = 0, on = 0.5)   # LOCKED main-text comparison
+b_values <- c(off = 0, on = 0.5)   # Main-text comparison
 
 # ------------------------------------------------------------------------
 # One chain: P_t / m_t trajectory with feedback strength b
@@ -130,18 +91,9 @@ run_chain <- function(b) {
   list(P = P_trace, M = M_trace, m_smooth = ms_trace)
 }
 
-# ------------------------------------------------------------------------
-# Run all (feedback condition x chain) combinations in parallel
-# ------------------------------------------------------------------------
-# Each chain is independent, so flatten (condition, chain) into one task
-# list and fork across cores with mclapply() instead of looping serially
-# per condition. mclapply is fork-based (macOS/Linux only -- won't work as
-# written on Windows).
-#
-# Forked workers inherit the parent's RNG state, so without care every
-# worker would draw the same random stream. "L'Ecuyer-CMRG" + mc.set.seed
-# gives each one its own independent, reproducible substream (standard
-# fix, see ?mclapply).
+# Run independent chains in parallel on macOS/Linux.
+# L'Ecuyer-CMRG and mc.set.seed provide separate random-number streams.
+# The fork-based mclapply implementation does not support multiple workers on Windows.
 
 n_cores <- max(1, parallel::detectCores(logical = TRUE) - 1, na.rm = TRUE)
 cat(sprintf("Using %d cores.\n", n_cores))
@@ -200,7 +152,7 @@ summary_tbl <- traj |>
 write.csv(summary_tbl, "res/revision_2026/sim3/sim3_summary.csv", row.names = FALSE)
 
 # ------------------------------------------------------------------------
-# Pilot checks: does feedback visibly slow recovery relative to b=0?
+# Compare recovery with and without feedback.
 # ------------------------------------------------------------------------
 cat("\n=== PRE-SHOCK BASELINE (last 50 burn-in steps), by feedback condition ===\n")
 print(summary_tbl |> filter(time_since_shock < 0, time_since_shock >= -50) |>
@@ -217,13 +169,10 @@ print(summary_tbl |> filter(time_since_shock >= post_shock_steps - 50) |>
         group_by(feedback) |>
         summarise(mean_P = mean(mean_P), mean_M = mean(mean_M), mean_m = mean(mean_m)))
 
-cat("\n'on' should sit further from the pre-shock baseline than 'off' at\n")
-cat("end-of-window (feedback slows/incompletes recovery), while still\n")
-cat("clearly decaying rather than plateaued or rising -- not trying to\n")
-cat("induce bistability/hysteresis here, just slower/less complete recovery.\n")
-cat("This comparison is LOCKED (b=0.5, from 03b_sim_feedback_grid_supplement.R);\n")
-cat("this script reproduces/rechecks the final main-text numbers, it doesn't\n")
-cat("re-calibrate b.\n")
+cat("\nCompare end-of-window activation with the pre-shock baseline.\n")
+cat("This analysis examines delayed recovery, not bistability or hysteresis.\n")
+cat("Feedback strength is fixed at b = 0.5, selected in\n")
+cat("03b_sim_feedback_grid_supplement.R. It is not recalibrated here.\n")
 
 # ------------------------------------------------------------------------
 # Figure: P_t / m_t trajectories, b=off vs b=on (0.5) overlaid -- MAIN FIGURE

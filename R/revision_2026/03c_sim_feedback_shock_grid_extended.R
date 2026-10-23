@@ -1,34 +1,6 @@
-# ============================================================
-# R/revision_2026/03c_sim_feedback_shock_grid_extended.R
-# ============================================================
-# Extends the Sim 2/3 SHOCK design (baseline -> single shock at t=0 ->
-# watch recovery) across the same feedback-strength grid used by the
-# history-dependence regime check (05_supp_regime_history_dependence.R:
-# b = 0, 0.50, 0.75, 1.00, 1.25, 1.50), instead of just comparing b=0 vs
-# the locked b=0.50.
-#
-# Why: the regime check's b=1.0+ results come from a DIFFERENT design --
-# no shock at all, two chains started directly at a low- vs. high-burden
-# state, watched for 1500 steps to see if they reconverge. That's a valid
-# history-dependence test, but it doesn't share Figure 3 panel A's "shock
-# at t=0" structure, so on its own it read as unmotivated. This script
-# asks the more directly comparable question instead: what does the SAME
-# shock-and-recovery experiment from Sim 2/3 look like as b increases past
-# the locked value? At low b the shock should still recover (matches Sim
-# 2/3); at high b the same perturbation may settle into a persistently
-# elevated state instead -- same shock marker and visual language as
-# panel A, just more lines (one per b), not a different design.
-#
-# post_shock_steps extended from Sim 2/3's 750 to 1500 (matching the
-# history-dependence check's window) so a plateau at high b has time to
-# become unambiguous rather than looking like "still slowly recovering,
-# just cut off early."
-#
-# Outputs
-# -------
-#   res/revision_2026/sim3c/sim3c_raw.rds
-#   res/revision_2026/sim3c/sim3c_summary.csv
-# ============================================================
+# Simulation 3. Recovery from a single contextual shock across feedback strengths.
+# Uses the same symptom model and shock size as 03_sim_feedback.R.
+# Outputs are saved in res/revision_2026/sim3c.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -48,14 +20,8 @@ dt      <- 0.02
 P_base  <- 0
 
 burn_in_steps    <- 200L
-# Extended again 2026-08-25 (1500 -> 2500). Figure 3 panel B is dropping
-# b=0/0.50 (redundant with panel A now) in favor of values further into
-# the transition, but b=1.25 was still visibly rising at step 1500 in the
-# previous run. A new b=1.30 point on the same 1500-step window would
-# likely have the same problem, so extend the window instead of adding a
-# value we can't yet honestly call resolved. If b=1.30 or 1.50 is still
-# rising at step 2500 when this reruns, that's a real finding to check,
-# not something to paper over -- see the end-of-window printout below.
+# Extended from 1,500 to 2,500 steps on 2026-08-25 because b = 1.25
+# had not settled by step 1,500. End-of-window changes are reported below.
 post_shock_steps <- 2500L
 shock_time       <- burn_in_steps + 1L
 shock_magnitude  <- 1.0
@@ -66,13 +32,8 @@ n_chains    <- 300L
 m_star       <- 0.2766389   # Sim 1 middle-condition (P=0) equilibrium mean_m
 alpha_smooth <- 0.05
 
-# Grid extended 2026-08-25: added b=0.90 and b=1.10/1.30 so Figure 3 panel
-# B can show points strictly between the already-established "recovers"
-# (b<=0.75) and "clear elevated plateau" (b=1.00) regimes, plus one point
-# further into the history-dependent regime -- without reusing b=0/0.50
-# (panel A's job now) or the previously-unresolved b=1.25. Kept b=1.25 and
-# the original b=0/0.50 in the grid too, so the CSV stays a superset even
-# though panel B only pulls a subset of these columns.
+# Added b = 0.90, 1.10 and 1.30 on 2026-08-25 to examine the transition.
+# Retain the original grid values in the saved results.
 b_grid <- c(b000 = 0, b050 = 0.50, b075 = 0.75, b090 = 0.90, b100 = 1.00,
             b110 = 1.10, b125 = 1.25, b130 = 1.30, b150 = 1.50)
 

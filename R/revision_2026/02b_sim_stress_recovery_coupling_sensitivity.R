@@ -1,44 +1,11 @@
-# ============================================================
-# R/revision_2026/02b_sim_stress_recovery_coupling_sensitivity.R
-# ============================================================
-# Supplementary sensitivity check for Simulation 2 (Appendix): does
-# recovery from the same slow-context perturbation depend on the
-# strength of symptom-symptom coupling? Same design as
-# 02_sim_stress_recovery.R (single shock, feedback off, b=0), but the
-# coupling matrix is scaled by c in c_grid while its topology (which
-# pairs are connected) is held fixed. c=1.0 reproduces 02's own omega
-# exactly -- that's the main-text Simulation 2 condition, kept here as
-# the reference level rather than replaced.
-#
-# Recovery is reported per condition as normalized excess activation,
-#   R(t) = (M(t) - M_pre) / (M_peak - M_pre),
-# using each condition's OWN pre-shock baseline and post-shock peak --
-# not raw M(t). Scaling omega up also raises baseline activation, so
-# comparing raw M(t) across conditions would conflate "recovers slower"
-# with "started from a higher baseline".
-#
-# c in {0.5, 1.0, 1.5} alone (n_chains=1000) showed no coupling
-# dependence in recovery timing -- recovery is governed by the
-# slow-process relaxation rate (kappa), not by omega, which is what the
-# slow-fast separation this model is built on would predict. c_grid now
-# extends further (up to 3x the reference omega) to check a different,
-# real hypothesis: whether pushing coupling strong enough drives the
-# network toward its own critical/bistable regime, where the FAST
-# layer's own relaxation could slow down independent of P. That is
-# checked directly below (CRITICALITY / BIMODALITY CHECK) rather than
-# assumed from the mean trajectory alone -- rising per-chain variance or
-# bimodality in pre-shock activation is what that regime would look
-# like; a merely higher mean is not evidence of it.
-#
-# Outputs
-# -------
-#   res/revision_2026/sim2/sim2_coupling_sensitivity_raw.rds
-#   res/revision_2026/sim2/sim2_coupling_sensitivity_summary.csv
-#   res/revision_2026/sim2/sim2_coupling_sensitivity_recovery.csv
-#   res/revision_2026/sim2/sim2_coupling_sensitivity_criticality_diagnostics.csv
-#   figs/revision_2026/fig_sim2_coupling_sensitivity.pdf
-#   figs/revision_2026/fig_sim2_coupling_criticality_check.pdf
-# ============================================================
+# Simulation 2 sensitivity analysis. Scale symptom coupling without changing topology.
+# Use the same contextual perturbation and recovery process as Simulation 2.
+# Recovery is normalized within each condition as (M(t) - M_pre)/(M_peak - M_pre).
+# This separates recovery timing from differences in baseline activation.
+# The initial scales 0.5, 1 and 1.5 showed little difference in recovery timing.
+# The grid was extended to 3 to examine stronger coupling. Distributional
+# checks describe variance and bimodality, without establishing a bifurcation.
+# Save results under res/revision_2026/sim2 and figures under figs/revision_2026.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -154,12 +121,8 @@ recovery_time_summary <- recovery_tbl |>
 cat("\n=== TIME TO 50% / 90% RECOVERY (steps since shock; NA = not reached in window) ===\n")
 print(recovery_time_summary)
 
-# --- criticality / bimodality check -------------------------------------
-# A network approaching its own tipping point shows rising variance and
-# eventually bimodality in its resting-state activation across
-# independent chains, even while the MEAN stays well inside (0, N).
-# That is a different signature than the saturation check above and has
-# to be checked on the per-chain distribution, not the condition mean.
+# Check resting-state variance and bimodality across coupling strengths.
+# A higher mean alone does not establish critical slowing or bistability.
 bimodality_coefficient <- function(x) {
   n <- length(x)
   m <- mean(x)

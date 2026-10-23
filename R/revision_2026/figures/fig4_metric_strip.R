@@ -1,38 +1,8 @@
-# ============================================================
-# R/revision_2026/figures/fig4_metric_strip.R
-# ============================================================
-# Compact quantitative strip for Figure 4.
-# Use with the network panels (fig4_network_trio.R, expanded 2026-08-27
-# from 3 to 4 networks):
-#   A true network | B baseline (fixed P) estimate | C symptom-only
-#   estimate | D context-adjusted estimate
-#   E estimated total coupling: sum_{i<j} omega_hat_ij
-#   F spurious absolute coupling on symptom pairs with true omega_ij = 0
-#
-# Replaces fig4_summary_panels.R as the quantitative half of Figure 4.
-# That earlier version tried to do three jobs (design schematic + summary
-# stats + replicate-level robustness check) in one figure, which is why it
-# read as sparse/unfocused however the individual panels were polished.
-# This version keeps only what belongs in the main text:
-#   - the design-schematic panel (old panel A) moves to the caption/Methods
-#   - the paired-replicate jitter plot (old panel D) moves to supplement
-#     as a robustness check, not main-figure content
-#   - the remaining "excess global strength over true" panel replaces the
-#     old absolute-scale panel B, which was forced to a huge y-range by
-#     including the "true" reference as a separate value on the same axis
-#     rather than differencing against it directly
-#
-# Meant to sit alongside fig4_network_trio.R's output as Figure 4's full
-# panel set (network trio on top, this strip on the bottom), assembled in
-# LaTeX/Overleaf rather than composited in R -- qgraph's base-R graphics
-# and this file's ggplot objects don't combine directly via patchwork
-# without extra wiring (ggplotify::as.ggplot() / wrap_elements()), left
-# as deferred, lower-priority work.
-#
-# Outputs
-# -------
-#   figs/revision_2026/Figure4_metric_strip.pdf / .png
-# ============================================================
+# Simulation 4 metric panels, combined with the network diagrams in main Figure 5.
+# Panel E shows the signed sum of estimated couplings.
+# Panel F shows absolute estimated coupling on truly uncoupled symptom pairs.
+# Summaries use 30 replicates of 10,000 participants per arm.
+# Write Figure4_metric_strip.pdf/.png. The filename retains its original numbering.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -48,18 +18,7 @@ by_arm <- read.csv("res/revision_2026/sim4/sim4_replicated_by_arm.csv") |>
 
 se <- function(x) sd(x) / sqrt(length(x))
 
-# ------------------------------------------------------------------------
-# This strip is placed at the SAME LaTeX width as the network trio
-# (\textwidth, not 0.82\textwidth as before), so panels E/F print larger
-# and their error bars are easier to read. With both figures now sharing
-# the same width-based scale factor (~6.5/9.2 ~= 0.71, using the trio's
-# current 9.2in native width as reference), the earlier 13.3pt title
-# override (calibrated for the narrower 0.67x placement) would now
-# overshoot and print larger than the trio's titles, so sizes below are
-# recalibrated for the new scale factor. Canvas native size bumped
-# slightly (8.0x2.6 -> 8.4x2.75) so once both figures share the print
-# width, this strip's height comes out close to but slightly less than
-# the trio's.
+# Set text sizes for the strip at the manuscript's full text width.
 title_size_strip <- 12.0
 axis_title_strip <- 11.2
 axis_text_strip  <- 10.2
@@ -87,21 +46,9 @@ summary_by_arm <- by_arm |>
     .groups = "drop"
   )
 
-# ------------------------------------------------------------------------
-# Panel E: estimated total coupling (signed sum of estimated pairwise
-# couplings), with a dashed reference line at the data-generating value
-# (true_total_coupling=3.05). Using the signed sum rather than an
-# absolute-value global-strength statistic avoids the systematic upward
-# contribution that comes from summing |estimate| over true-zero edges,
-# where sampling noise is symmetric around zero but abs() makes all of it
-# positive.
-#
-# y-axis limits/breaks (both panels) are FIXED per the design-pass spec
-# rather than computed from summary_by_arm, to remove dead space above/
-# below the points. If a future data refresh shifts coupling_mean/
-# spurious_mean meaningfully, check the rendered PNG for clipped points/
-# error bars before trusting these fixed ranges again.
-# ------------------------------------------------------------------------
+# Panel E. Compare signed total coupling with the generating value, 3.05.
+# Signed sums allow positive and negative errors on true-zero edges to cancel.
+# Axis limits are fixed for these results. Check them if new results are plotted.
 pE <- ggplot(
   summary_by_arm,
   aes(x = arm, y = coupling_mean, colour = arm)
@@ -154,18 +101,8 @@ pE <- ggplot(
     axis.text.x = element_text(size = axis_text_strip)
   )
 
-# ------------------------------------------------------------------------
-# Panel F: spurious absolute coupling summed across symptom pairs whose
-# true (data-generating) omega_ij is zero. More directly tied to the
-# recovery question than a mean-absolute-error number -- it's literally
-# how much coupling the estimator attributes to pairs that aren't coupled
-# at all.
-#
-# y-axis limits/breaks are FIXED per the design-pass spec (same reasoning
-# as panel E) -- check the rendered PNG once this reruns, since
-# spurious_mean's actual range depends on the current replicated-run
-# output and wasn't recomputed here.
-# ------------------------------------------------------------------------
+# Panel F. Sum absolute estimates over pairs with zero generating coupling.
+# Check the fixed axis limits if the input results change.
 pF <- ggplot(
   summary_by_arm,
   aes(x = arm, y = spurious_mean, colour = arm)

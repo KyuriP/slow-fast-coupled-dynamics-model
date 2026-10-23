@@ -1,38 +1,9 @@
-# ============================================================
-# R/revision_2026/02c_sim2_coupling_sensitivity_figure.R
-# ============================================================
-# Re-plots the coupling-sensitivity recovery figure from the raw
-# per-chain output already saved by 02b_sim_stress_recovery_coupling_
-# sensitivity.R -- no new simulation, just a cleaner final figure for
-# the appendix. Requires that 02b has been run (with c=0.3 in its
-# c_grid -- rerun 02b first if sim2_coupling_sensitivity_raw.rds
-# predates that).
-#
-# Changes from 02b's own figure:
-#   1. Three conditions only: c in {0.3, 1.0 (reference), 3.0}. The
-#      full six/seven-point grid showed recovery is flat from c=0.3 to
-#      c=2.0 and only pulls away at c=2.5-3.0 -- three points (a low
-#      end, the reference, and the clearly-diverged high end) tell
-#      that story without the clutter of the intermediate, redundant
-#      points.
-#   2. Individual chains as light spaghetti under a bold mean line,
-#      matching the Simulation 1 burn-in trace figure. Each chain is
-#      smoothed with a short rolling mean (spag_smooth_window steps)
-#      before computing its own R(t) -- raw per-step chain values are
-#      as noisy as the whole condition's peak-minus-baseline window,
-#      so without smoothing the normalization blows that noise up into
-#      a solid haze instead of a light texture.
-#   3. Colour: fixed, fully-saturated categorical blue/grey/red rather
-#      than a distance-scaled diverging ramp. With only 3 categories,
-#      scaling saturation by how far c is from 1 made asymmetric grids
-#      (like 0.3 vs 3, which are not equidistant from 1) look washed
-#      out on the closer side -- fixed full-strength colours at each
-#      rank position (lowest / reference / highest) read clearly
-#      regardless of the actual numeric spacing.
-#
-# Requires: res/revision_2026/sim2/sim2_coupling_sensitivity_raw.rds
-# Output:   figs/revision_2026/fig_sim2_coupling_sensitivity.pdf
-# ============================================================
+# Plot the saved Simulation 2 coupling-sensitivity results for scales 0.3, 1 and 3.
+# The reference scale is 1. The full simulation grid remains in the saved results.
+# Individual trajectories are smoothed before computing normalized recovery.
+# Use fixed colours for the three conditions.
+# Input is res/revision_2026/sim2/sim2_coupling_sensitivity_raw.rds.
+# Output is figs/revision_2026/fig_sim2_coupling_sensitivity.pdf.
 
 suppressPackageStartupMessages({
   library(dplyr)

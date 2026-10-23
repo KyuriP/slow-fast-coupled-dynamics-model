@@ -1,24 +1,8 @@
-# ============================================================
-# R/revision_2026/05_supp_regime_history_dependence.R
-# ============================================================
-# Supplementary regime check: can the revised 0/1 heterogeneous
-# symptom-level slow-fast model show tipping-like or history-dependent
-# behavior under stronger feedback?
-#
-# NOT part of the main four-simulation sequence. This is a robustness/
-# regime check replacing the old homogeneous mean-field bistability figure.
-#
-# Main question: start the same system from a low-burden state versus a
-# high-burden state -- do trajectories converge to the same late state, or
-# stay separated for a long time under stronger feedback?
-#
-# Interpretation:
-#   - late low-start and high-start states overlap: no evidence of history
-#     dependence in that parameter regime.
-#   - they stay separated: evidence for tipping-like/metastable behavior.
-#   - P_t runs off to extreme values: that's runaway/saturation, not
-#     bistability.
-# ============================================================
+# Simulation 3 initial-state check, shown in the main feedback figure.
+# Compare low and high initial states under the same feedback parameters.
+# Separation at the end of the observed window indicates initial-state dependence.
+# It does not by itself establish asymptotic bistability.
+# Extreme growth of P should be distinguished from stable separation.
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -135,16 +119,9 @@ simulate_history_chain <- function(
   bind_rows(out)
 }
 
-# ------------------------------------------------------------------------
-# 2. Run grid, in parallel
-# ------------------------------------------------------------------------
-# 6 b-values x 2 inits x 200 chains x 1500 steps = 2400 independent chains --
-# each (b, init, chain) combination is independent, so flatten into one
-# task list and fork across cores with mclapply() rather than looping via
-# pmap_dfr(). Same pattern as 03_sim_feedback.R /
-# 04b_sim_network_estimation_replicated.R: fork-based mclapply (macOS/
-# Linux only) + "L'Ecuyer-CMRG" + mc.set.seed=TRUE so each worker gets its
-# own reproducible RNG substream instead of replaying the parent's stream.
+# Run each feedback level, initial state and chain as an independent task.
+# The number of tasks follows the grid defined above.
+# Parallel execution uses mclapply on macOS/Linux.
 n_cores <- max(1, parallel::detectCores(logical = TRUE) - 1, na.rm = TRUE)
 cat(sprintf("Using %d cores.\n", n_cores))
 

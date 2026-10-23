@@ -1,28 +1,9 @@
-# ============================================================
-# R/revision_2026/03b_sim_feedback_grid_supplement.R
-# ============================================================
-# Supplement to Simulation 3: the b calibration grid used to pick the
-# main-text feedback value. Same design as 03_sim_feedback.R (same
-# shock/recovery setup as Sim 2, signed feedback term
-# b*(m_smooth - m_star)*dt -- see 03_sim_feedback.R's 2026-08-27 note),
-# but sweeps b across off/mild/medium/strong instead of just off vs on.
-#
-# NOT the main-text simulation. b=0.5 ("medium") was picked from this grid
-# because it produced a visible feedback effect in both P and symptom
-# burden while all four conditions still decayed toward baseline (checked
-# below, and in the original calibration run: steps 700-724 vs 725-749 in
-# the post-shock window, every condition including "strong" was still
-# declining, not plateaued). b=0.3 alone was too subtle in symptom burden;
-# b=0.7 gave the largest separation but risks reading as tipping-like even
-# though it isn't. See 03_sim_feedback.R for the locked off-vs-on(b=0.5)
-# comparison.
-#
-# Outputs
-# -------
-#   res/revision_2026/sim3/sim3_feedback_grid_raw.rds
-#   res/revision_2026/sim3/sim3_feedback_grid_summary.csv
-#   figs/revision_2026/fig_sim3_feedback_grid_supplement.pdf
-# ============================================================
+# Exploratory feedback grid used to select b = 0.5 for Simulation 3.
+# Compare b = 0, 0.3, 0.5 and 0.7 under the same perturbation design.
+# All four conditions were still declining near the end of the calibration run.
+# b = 0.5 gave a visible recovery delay without using the strongest condition.
+# Feedback is signed, as in 03_sim_feedback.R.
+# Outputs are saved under res/revision_2026/sim3.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -59,7 +40,7 @@ alpha_smooth <- 0.05
 b_grid <- c(off = 0, mild = 0.3, medium = 0.5, strong = 0.7)
 
 # ------------------------------------------------------------------------
-# One chain: P_t / m_t trajectory with feedback strength b (positive-part)
+# One chain: P_t / m_t trajectory with feedback strength b (signed feedback)
 # ------------------------------------------------------------------------
 run_chain <- function(b) {
   P <- P_base

@@ -1,17 +1,6 @@
-# ============================================================
-# R/revision_2026/01_sim_context_baseline.R
-# ============================================================
-# Simulation 1: same tau_i, omega_ij, gamma_i; only P differs.
-# No slow diffusion, shocks, feedback, heatmaps, or network estimation --
-# those come later (02_sim_stress_recovery.R onward), once this one is
-# checked clean per Step 6 of the revision plan.
-#
-# Outputs
-# -------
-#   res/revision_2026/sim1/sim1_raw.rds
-#   res/revision_2026/sim1/sim1_summary.csv
-#   figs/revision_2026/fig_sim1_context_baseline.pdf
-# ============================================================
+# Simulation 1. Vary fixed context while keeping symptom parameters unchanged.
+# Results are saved under res/revision_2026/sim1.
+# The diagnostic figure is fig_sim1_context_baseline.pdf.
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -122,7 +111,7 @@ symptom_activation_wide <- symptom_activation_all |>
 write.csv(symptom_activation_wide, "res/revision_2026/sim1/sim1_symptom_activation.csv", row.names = FALSE)
 
 # ------------------------------------------------------------------------
-# Step 6 pilot checks
+# Activation checks
 # ------------------------------------------------------------------------
 cat("\n=== MEAN SYMPTOM BURDEN BY P ===\n")
 print(summary_tbl |> select(condition, P, mean_M, mean_m, sd_M))
@@ -137,11 +126,8 @@ print(symptom_activation_all |>
         select(symptom, low, middle, high))
 
 cat("\n--- Saturation check ---\n")
-cat("Good pattern: low P shows low-but-nonzero activation, high P shows higher\n")
-cat("activation but not all nine symptoms pinned near 0 or 1 across the board.\n")
-cat("Bad pattern: low P all near 0, high P all near 1 for every symptom -- if\n")
-cat("so, adjust P values / tau / omega strength / gamma strength only, per\n")
-cat("Step 6 of the revision plan. Do not change simulate_fast_sweep() itself.\n")
+cat("Check whether symptom activation increases across contextual levels\n")
+cat("without approaching 0 or 1 for every symptom.\n")
 
 # ------------------------------------------------------------------------
 # One figure
@@ -159,12 +145,8 @@ p1 <- ggplot(burden_all, aes(x = M, fill = condition)) +
 
 ggsave("figs/revision_2026/fig_sim1_context_baseline.pdf", p1, width = 8, height = 5.5)
 
-# ------------------------------------------------------------------------
-# Burn-in convergence check: does the first half of the post-burn-in
-# window (sweeps T_burn+1 .. T_burn+T_post/2) still differ systematically
-# from the second half? If mean_M is still trending at T_burn, burn-in
-# wasn't long enough and T_burn should be increased.
-# ------------------------------------------------------------------------
+# Compare the first and second halves of the post-burn-in period.
+# A remaining trend would indicate that a longer burn-in is needed.
 half <- T_post %/% 2
 drift_check <- burden_all |>
   mutate(half = ifelse(sweep <= half, "first_half_post_burnin", "second_half_post_burnin")) |>

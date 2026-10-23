@@ -1,13 +1,6 @@
-# ============================================================
-# R/revision_2026/00_parameters_uncentered01.R
-# ============================================================
-# Symptom names, tau_i, omega_ij, gamma_i for the revised uncentered 0/1
-# model. Replaces 01_create_finalparams.R for the revision track.
-#
-# These tau/gamma/omega values are theoretical and are not fit to an
-# empirical dataset. They were selected to produce heterogeneous,
-# non-degenerate symptom activation across the simulation conditions.
-# ============================================================
+# Parameters for the nine-symptom, uncentered 0/1 model.
+# These are illustrative values, not estimates from participant data.
+# The same parameters are used across the revised simulations.
 
 symptoms <- c(
   "anhedonia",
@@ -33,11 +26,7 @@ tau <- c(
   concentration = -2.30,
   psychomotor   = -3.00,
   suicidal      = -4.00
-) + 1.3  # pilot adjustment (was too floor-heavy at the original values --
-         # mean_m stayed under 0.14 even at the high-context condition;
-         # +1.3 is a first attempt at getting the middle condition closer
-         # to mean_m ~ 0.3-0.4). Revert to the un-shifted values above if
-         # this overshoots into ceiling saturation instead.
+) + 1.3  # Fixed shift selected during calibration to avoid floor activation.
 
 gamma <- c(
   anhedonia     = 0.90,

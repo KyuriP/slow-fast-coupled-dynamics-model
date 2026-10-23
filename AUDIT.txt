@@ -1,7 +1,43 @@
+Repository check and comment cleanup
+23 October 2026
+
+The manuscript was submitted to Psychological Methods on 23 October 2026.
+The README figure map now follows the submitted version. Simulation 5 and
+the additional HELIUS checks are in the supplement. The observation-window
+analysis remains exploratory and is not part of the submitted manuscript.
+
+Comments were shortened and corrected to describe the current calculations.
+Corrections include n = 10,000 in the replicated network design, signed
+feedback, three estimated networks, and the manually specified figure palette.
+Calibration choices and the limits of finite-time recovery comparisons remain
+documented. No parameters, seeds, model equations or numerical results changed.
+
+The pre-cleanup check parsed all 58 R files. Twelve independent dataset replays
+and the conditional-mixture identity check passed in an isolated copy. A small
+Simulation 5 run completed using the R fallback after the C++ backend failed
+to link the local emutls_w library. This check did not rerun the full simulation
+study or empirical fits. All 16 stored figure hashes matched the manifest.
+
+Historical records follow
+The dates, page counts, figure numbers and submission status below refer to
+those earlier checkpoints. They are retained as a record of the work done then.
+Use README.md for the current figure map.
+
+Figure restoration
+20 October 2026
+
+The monochrome redesigns of Figures 6 and 8 were withdrawn after author review.
+The previous figure assets, plotting layouts and corresponding captions were
+restored. The numerical results are unchanged. The shortened code comments
+and the manuscript's disclosure and transparency corrections remain.
+The author will review and push the local changes.
+
+Earlier verification records
+
 Psychological Methods revision verification
 20 October 2026
 
-Current documents
+Documents at the 20 October checkpoint
 The revised manuscript has 48 double-spaced pages and the supplement has 25.
 Both compile without errors, unresolved references or citations, or overfull
 boxes. All pages were visually inspected, with dense new tables and equations
@@ -52,7 +88,7 @@ for the author. No manuscript has been submitted.
 
 Earlier package audit, before the Psychological Methods revision
 The page and figure counts in the historical record below describe the earlier
-version. The current counts are given above.
+version. Those counts are historical and do not describe the submitted manuscript.
 
 Verification record for the revised manuscript package
 20 October 2026

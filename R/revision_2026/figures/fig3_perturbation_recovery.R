@@ -1,39 +1,8 @@
-# ============================================================
-# R/revision_2026/figures/fig3_perturbation_recovery.R
-# ============================================================
-# Figure for Simulation 2 (2026-08-27, replaces fig3_stress_recovery.R):
-# the manuscript describes a perturbation to the slow field entirely in
-# prose (P_t jumps to ~1.00, symptom activation peaks at ~4.73, both
-# recover) with no time-course figure backing those numbers up. This
-# builds that: mean P_t and mean number of active symptoms over time,
-# feedback off (b=0, matching Sim 2), each as a bold mean trajectory with
-# a light 95% ribbon and a small sample of individual chains.
-#
-# Renamed from fig3_stress_recovery.R -- Sim 2 isn't modeling stressor
-# occurrence, it's a one-time perturbation to P_t, so "perturbation
-# recovery" matches the manuscript's own framing better than "stress".
-#
-# Panel B went through a few failed designs before landing on a heatmap:
-# all 200 chains as spaghetti rendered as a solid block that obscured the
-# mean curve; mean+ribbon alone read as too sterile; a faint 12-chain
-# sample still looked like a barcode rather than noise, since symptom
-# count is a discrete 0-9 series and doesn't read as texture the way a
-# continuous trajectory does. The heatmap (proportion of the 200 chains at
-# each symptom count, per time bin, with the bold mean line overlaid) fits
-# the data better: the real interest is how the FULL distribution shifts
-# and reshapes after the perturbation, not individual chain paths. Panel A
-# keeps the small-sample-spaghetti approach since P_t is continuous and
-# that version read cleanly from the start.
-#
-# Uses raw symptom counts (mean_M), not the mean_m fraction, so the
-# y-axis matches the units cited in the Results prose ("an average of 2.48
-# active symptoms", "peak of about 4.73") -- no unit conversion for the
-# reader to do in their head.
-#
-# Outputs
-# -------
-#   figs/revision_2026/Figure3_perturbation_recovery.pdf / .png
-# ============================================================
+# Simulation 2 trajectories with feedback off.
+# Panel A shows contextual recovery. Panel B shows the distribution of
+# symptom counts across chains, with the mean trajectory overlaid.
+# Counts use the 0 to 9 scale reported in the manuscript.
+# Output is Figure3_perturbation_recovery.pdf and .png.
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -52,23 +21,15 @@ sim2_w <- sim2 |> filter(time_since_shock >= plot_window[1], time_since_shock <=
 
 base_sz <- 11
 
-# ------------------------------------------------------------------------
-# 0a. Rolling-window smoothing for the symptom-count panel (display only).
-#     Two-sided moving average; edges become NA and are silently dropped
-#     by geom_line.
-# ------------------------------------------------------------------------
+# Smooth the symptom-count mean for display with a two-sided moving average.
+# Edge values without a full window are omitted.
 roll_mean <- function(x, k = 15) as.numeric(stats::filter(x, rep(1 / k, k), sides = 2))
 
 sim2_w <- sim2_w |>
   arrange(time_since_shock) |>
   mutate(mean_M_smooth = roll_mean(mean_M), se_M_smooth = roll_mean(se_M))
 
-# ------------------------------------------------------------------------
-# 0b. A small sample (12 of 200 chains, see header note) for a faint
-#     spaghetti layer behind the mean in both panels. Individual-chain M is
-#     NOT rolling-smoothed -- the raw per-chain step noise is the point of
-#     showing a few of them (visible texture, not another smoothed curve).
-# ------------------------------------------------------------------------
+# Select a reproducible subset of chains for the contextual trajectories.
 set.seed(3)
 n_sample_chains <- 25L
 
@@ -76,14 +37,8 @@ sim2_raw <- readRDS("res/revision_2026/sim2/sim2_raw.rds")$traj |>
   filter(time_since_shock >= plot_window[1], time_since_shock <= plot_window[2])
 sim2_chains_w <- sim2_raw |> filter(chain %in% sample(unique(sim2_raw$chain), n_sample_chains))
 
-# ------------------------------------------------------------------------
-# 0c. Panel B heatmap data: bin time into the same window as the
-#     rolling-mean smoothing (k=15) so the heatmap's time resolution
-#     matches the mean line's, then compute the proportion of all 200
-#     chains at each symptom count (0-9) within each time bin. Uses the
-#     full sim2_raw (all chains), not the 12-chain sample -- the heatmap
-#     needs the full distribution, unlike the spaghetti layer.
-# ------------------------------------------------------------------------
+# Bin symptom counts over the same 15-step window used for smoothing.
+# Show the distribution across chains and times within each bin.
 time_bin_width <- 15
 
 heat_df <- sim2_raw |>
@@ -137,14 +92,7 @@ pA <- ggplot(sim2_w, aes(x = time_since_shock, y = mean_P)) +
   theme_pub(base_size = base_sz) +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
-# ------------------------------------------------------------------------
-# 3. Panel B: heatmap of the symptom-count distribution over time, with
-#    the bold mean line overlaid. geom_tile is drawn first (own data/aes,
-#    inherit.aes=FALSE) so it sits behind the mean line. The mean line is
-#    drawn twice, a thicker white "halo" then the actual dark line, so it
-#    stays legible against both the light and saturated ends of the fill
-#    scale rather than one colour that only contrasts with part of it.
-# ------------------------------------------------------------------------
+# Panel B. Draw the symptom-count heatmap behind the mean trajectory.
 pB <- ggplot(sim2_w, aes(x = time_since_shock, y = mean_M_smooth)) +
   geom_tile(
     data = heat_df,
@@ -170,12 +118,7 @@ pB <- ggplot(sim2_w, aes(x = time_since_shock, y = mean_M_smooth)) +
        x = "Steps since perturbation", y = "Number of active symptoms") +
   theme_pub(base_size = base_sz)
 
-# ------------------------------------------------------------------------
-# 4. Combine + save -- vertical stack, shared x-axis (perturbation-onset
-#    line lines up between panels). Heights slightly unequal (0.9 : 1.1) --
-#    panel A alone looked a touch too tall once B carries the heatmap plus
-#    its own legend row underneath.
-# ------------------------------------------------------------------------
+# Stack the two panels with a shared perturbation-relative time axis.
 fig_perturbation_recovery <- pA / pB + plot_layout(heights = c(0.9, 1.1))
 
 dir.create("figs/revision_2026", recursive = TRUE, showWarnings = FALSE)
